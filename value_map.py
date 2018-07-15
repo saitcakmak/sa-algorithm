@@ -9,7 +9,7 @@ prob = queue
 mu_gamma = 5
 std_gamma = 0.1
 alpha = 0.9
-n0, m0 = 1000, 100
+n0, m0 = 1000, 1000
 
 
 def collect_inner_samples(m, gamma, theta):
@@ -44,16 +44,16 @@ def collect_samples(n, m, theta):
 def sample():
     begin = datetime.datetime.now()
     val_list =[]
-    for i in range(60):
+    for i in range(30):
         now = datetime.datetime.now()
-        print("iter: ", i, " time: ", now-begin)
         in_list = []
-        for j in range(100):
-            samp, der = collect_samples(n0, m0, (5 + i/200))
+        for j in range(10):
+            print("i: ", i, " j: ", j, " time: ", now - begin)
+            samp, der = collect_samples(n0, m0, (5 + i/100))
             in_list.append(samp)
         val_list.append(np.average(in_list))
     return val_list
 
 
 vals = sample()
-np.save("mm1_vals_5to54_2xprecise_100x1000x100", vals)
+np.save("mm1_vals_5to53_10x1000x1000", vals)
