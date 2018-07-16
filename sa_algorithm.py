@@ -17,7 +17,7 @@ std_gamma = 0.1
 alpha = 0.9
 
 theta0 = 3
-n_m_ratio = 0.1
+n_m_ratio = 1
 n0 = 100
 
 # step size epsilon is similar to that of gasso
