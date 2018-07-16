@@ -6,12 +6,13 @@ from simple_quad import quad
 from simple_quadv2 import quadv2
 from mm1_toy5x import queue5x
 from simple_quadv3 import quadv3
+from prod_inv import prod
 start = datetime.datetime.now()
 
-prob = queue
-prob_str = "queue"
+prob = prod
+prob_str = "prod"
 
-mu_gamma = 5
+mu_gamma = 1
 std_gamma = 0.1
 alpha = 0.9
 
@@ -19,9 +20,10 @@ theta0 = 3
 n0, m0 = 100, 10
 
 # step size epsilon is similar to that of gasso
-eps_num = 0.1
+eps_num = 10
 eps_denom = 1000
 eps_power = 0.6
+linear_coef = 0.5
 
 
 def collect_inner_samples(m, gamma, theta):
@@ -68,18 +70,17 @@ def calc_der(n, m, theta):
     return np.average(cvar_list), np.average(cvar_der_list)
 
 
-def fixed_budget(iter_count):
+def fixed_budget(iter_count, t0=theta0, mult=4):
     """
     start with mu0 and follow the algorithm from there
     use the iterative algorithm and map the evolution of the objective function value
     :return:
     """
     begin = datetime.datetime.now()
-    mult = 4
     val_list = []
     der_list = []
     eps_list = []
-    theta_list = [theta0]
+    theta_list = [t0]
     for k in range(iter_count):
         eps = eps_num / (eps_denom + k) ** eps_power
         val, der = calc_der(mult * n0, mult * m0, theta_list[k])
@@ -91,13 +92,13 @@ def fixed_budget(iter_count):
         now = datetime.datetime.now()
         print("k = ", k, " theta = ", theta_list[k], " val = ", val, " der = ", der, " time: ", now-begin)
         if k % 100 == 0:
-            np.save(prob_str + "_" + str(mult) + "xfixed_t0=" + str(theta0) + "_eps01_iter_" + str(k) + "_theta", theta_list)
-            np.save(prob_str + "_" + str(mult) + "xfixed_t0=" + str(theta0) + "_eps01_iter_" + str(k) + "_val", val_list)
-            np.save(prob_str + "_" + str(mult) + "xfixed_t0=" + str(theta0) + "_eps01_iter_" + str(k) + "_der", der_list)
+            np.save(prob_str + "_" + str(mult) + "xfixed_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_theta", theta_list)
+            np.save(prob_str + "_" + str(mult) + "xfixed_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_val", val_list)
+            np.save(prob_str + "_" + str(mult) + "xfixed_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_der", der_list)
     return theta_list, val_list, der_list, eps_list
 
 
-def linear_budget(iter_count):
+def linear_budget(iter_count, t0=theta0):
     """
     start with mu0 and follow the algorithm from there
     use the iterative algorithm and map the evolution of the objective function value
@@ -108,10 +109,10 @@ def linear_budget(iter_count):
     val_list = []
     der_list = []
     eps_list = []
-    theta_list = [theta0]
+    theta_list = [t0]
     for k in range(iter_count):
         eps = eps_num / (eps_denom + k) ** eps_power
-        val, der = calc_der(n0 + int(k/10), m0 + int(k/100), theta_list[k])
+        val, der = calc_der(n0 + int(linear_coef * k), m0 + int(linear_coef * k/10), theta_list[k])
         theta_next = theta_list[k] - eps * der
         theta_list.append(theta_next)
         val_list.append(val)
@@ -120,13 +121,13 @@ def linear_budget(iter_count):
         now = datetime.datetime.now()
         print("k = ", k, " theta = ", theta_list[k], " val = ", val, " der = ", der, " time: ", now-begin)
         if k % 100 == 0:
-            np.save(prob_str + "_linear01_t0=" + str(theta0) + "_eps01_iter_" + str(k) + "_theta", theta_list)
-            np.save(prob_str + "_linear01_t0=" + str(theta0) + "_eps01_iter_" + str(k) + "_val", val_list)
-            np.save(prob_str + "_linear01_t0=" + str(theta0) + "_eps01_iter_" + str(k) + "_der", der_list)
+            np.save(prob_str + "_linear" + str(linear_coef) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_theta", theta_list)
+            np.save(prob_str + "_linear" + str(linear_coef) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_val", val_list)
+            np.save(prob_str + "_linear" + str(linear_coef) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_der", der_list)
     return theta_list, val_list, der_list, eps_list
 
 
-def dynamic_step_linear_budget(iter_count):
+def dynamic_step_linear_budget(iter_count, t0=theta0):
     """
     start with mu0 and follow the algorithm from there
     use the iterative algorithm and map the evolution of the objective function value
@@ -138,11 +139,11 @@ def dynamic_step_linear_budget(iter_count):
     val_list = []
     der_list = []
     eps_list = []
-    theta_list = [theta0]
+    theta_list = [t0]
     s = 0
     for k in range(iter_count):
         eps = eps_num / (eps_denom + s) ** eps_power
-        val, der = calc_der(n0 + int(k/10), m0 + int(k/100), theta_list[k])
+        val, der = calc_der(n0 + int(linear_coef * k), m0 + int(linear_coef * k/10), theta_list[k])
         theta_next = theta_list[k] - eps * der
         theta_list.append(theta_next)
         val_list.append(val)
@@ -151,15 +152,15 @@ def dynamic_step_linear_budget(iter_count):
         now = datetime.datetime.now()
         print("k = ", k, " theta = ", theta_list[k], " val = ", val, " der = ", der, " eps = ", eps, " time: ", now-begin)
         if k % 100 == 0:
-            np.save(prob_str + "_dynamic_linear01_t0=" + str(theta0) + "_eps01_iter_" + str(k) + "_theta", theta_list)
-            np.save(prob_str + "_dynamic_linear01_t0=" + str(theta0) + "_eps01_iter_" + str(k) + "_val", val_list)
-            np.save(prob_str + "_dynamic_linear01_t0=" + str(theta0) + "_eps01_iter_" + str(k) + "_der", der_list)
+            np.save(prob_str + "_dynamic_linear" + str(linear_coef) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_theta", theta_list)
+            np.save(prob_str + "_dynamic_linear" + str(linear_coef) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_val", val_list)
+            np.save(prob_str + "_dynamic_linear" + str(linear_coef) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_der", der_list)
         if der_list[k] * der_list[max(k-1, 0)] < 0:
             s += 1
     return theta_list, val_list, der_list, eps_list
 
 
-# print(collect_samples(1000, 100, 5))
+# dynamic_step_linear_budget(50)
 
 end = datetime.datetime.now()
 print("time: ", end-start)

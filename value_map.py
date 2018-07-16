@@ -2,14 +2,18 @@ import numpy as np
 import datetime
 from multiprocessing import Pool as ThreadPool
 from mm1_toy import queue
-# from simple_quadv2 import quadv2
+from simple_quadv2 import quadv2
+from prod_inv import prod
 
-prob = queue
+prob = prod
+prob_str = "prod"
 
-mu_gamma = 5
+mu_gamma = 1
 std_gamma = 0.1
 alpha = 0.9
-n0, m0 = 1000, 1000
+rep, n0, m0 = 40, 4000, 400
+t0 = 5
+length, precision = 50, 10
 
 
 def collect_inner_samples(m, gamma, theta):
@@ -44,16 +48,16 @@ def collect_samples(n, m, theta):
 def sample():
     begin = datetime.datetime.now()
     val_list =[]
-    for i in range(30):
-        now = datetime.datetime.now()
+    for i in range(length):
         in_list = []
         for j in range(10):
+            now = datetime.datetime.now()
             print("i: ", i, " j: ", j, " time: ", now - begin)
-            samp, der = collect_samples(n0, m0, (5 + i/100))
+            samp, der = collect_samples(n0, m0, (t0 + i/precision))
             in_list.append(samp)
         val_list.append(np.average(in_list))
     return val_list
 
 
 vals = sample()
-np.save("mm1_vals_5to53_10x1000x1000", vals)
+np.save(prob_str + "_vals_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_" + str(t0) + "to" + str(t0 + length/precision) + "_" + str(rep) + "x" + str(n0) + "x" + str(m0), vals)
