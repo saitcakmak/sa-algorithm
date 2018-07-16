@@ -17,7 +17,8 @@ std_gamma = 0.1
 alpha = 0.9
 
 theta0 = 3
-n0, m0 = 100, 10
+n_m_ratio = 0.1
+n0 = 100
 
 # step size epsilon is similar to that of gasso
 eps_num = 1
@@ -81,9 +82,10 @@ def fixed_budget(iter_count, t0=theta0, mult=4):
     der_list = []
     eps_list = []
     theta_list = [t0]
+    n = mult * n0
     for k in range(iter_count):
         eps = eps_num / (eps_denom + k) ** eps_power
-        val, der = calc_der(mult * n0, mult * m0, theta_list[k])
+        val, der = calc_der(n, n * n_m_ratio, theta_list[k])
         theta_next = theta_list[k] - eps * der
         theta_list.append(theta_next)
         val_list.append(val)
@@ -92,9 +94,9 @@ def fixed_budget(iter_count, t0=theta0, mult=4):
         now = datetime.datetime.now()
         print("k = ", k, " theta = ", theta_list[k], " val = ", val, " der = ", der, " time: ", now-begin)
         if k % 100 == 0:
-            np.save(prob_str + "_" + str(mult) + "xfixed_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_theta", theta_list)
-            np.save(prob_str + "_" + str(mult) + "xfixed_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_val", val_list)
-            np.save(prob_str + "_" + str(mult) + "xfixed_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_der", der_list)
+            np.save(prob_str + "_" + str(mult) + "xfixed_n-m" + str(n_m_ratio) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_theta", theta_list)
+            np.save(prob_str + "_" + str(mult) + "xfixed_n-m" + str(n_m_ratio) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_val", val_list)
+            np.save(prob_str + "_" + str(mult) + "xfixed_n-m" + str(n_m_ratio) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_der", der_list)
     return theta_list, val_list, der_list, eps_list
 
 
@@ -112,7 +114,8 @@ def linear_budget(iter_count, t0=theta0):
     theta_list = [t0]
     for k in range(iter_count):
         eps = eps_num / (eps_denom + k) ** eps_power
-        val, der = calc_der(n0 + int(linear_coef * k), m0 + int(linear_coef * k/10), theta_list[k])
+        n = n0 + int(linear_coef * k)
+        val, der = calc_der(n, n * n_m_ratio, theta_list[k])
         theta_next = theta_list[k] - eps * der
         theta_list.append(theta_next)
         val_list.append(val)
@@ -121,9 +124,9 @@ def linear_budget(iter_count, t0=theta0):
         now = datetime.datetime.now()
         print("k = ", k, " theta = ", theta_list[k], " val = ", val, " der = ", der, " time: ", now-begin)
         if k % 100 == 0:
-            np.save(prob_str + "_linear" + str(linear_coef) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_theta", theta_list)
-            np.save(prob_str + "_linear" + str(linear_coef) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_val", val_list)
-            np.save(prob_str + "_linear" + str(linear_coef) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_der", der_list)
+            np.save(prob_str + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_theta", theta_list)
+            np.save(prob_str + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_val", val_list)
+            np.save(prob_str + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_der", der_list)
     return theta_list, val_list, der_list, eps_list
 
 
@@ -143,7 +146,8 @@ def dynamic_step_linear_budget(iter_count, t0=theta0):
     s = 0
     for k in range(iter_count):
         eps = eps_num / (eps_denom + s) ** eps_power
-        val, der = calc_der(n0 + int(linear_coef * k), m0 + int(linear_coef * k/10), theta_list[k])
+        n = n0 + int(linear_coef * k)
+        val, der = calc_der(n, n * n_m_ratio, theta_list[k])
         theta_next = theta_list[k] - eps * der
         theta_list.append(theta_next)
         val_list.append(val)
@@ -152,9 +156,9 @@ def dynamic_step_linear_budget(iter_count, t0=theta0):
         now = datetime.datetime.now()
         print("k = ", k, " theta = ", theta_list[k], " val = ", val, " der = ", der, " eps = ", eps, " time: ", now-begin)
         if k % 100 == 0:
-            np.save(prob_str + "_dynamic_linear" + str(linear_coef) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_theta", theta_list)
-            np.save(prob_str + "_dynamic_linear" + str(linear_coef) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_val", val_list)
-            np.save(prob_str + "_dynamic_linear" + str(linear_coef) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_der", der_list)
+            np.save(prob_str + "_dynamic_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_theta", theta_list)
+            np.save(prob_str + "_dynamic_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_val", val_list)
+            np.save(prob_str + "_dynamic_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_der", der_list)
         if der_list[k] * der_list[max(k-1, 0)] < 0:
             s += 1
     return theta_list, val_list, der_list, eps_list

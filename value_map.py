@@ -11,9 +11,9 @@ prob_str = "prod"
 mu_gamma = 1
 std_gamma = 0.1
 alpha = 0.9
-rep, n0, m0 = 40, 4000, 400
+rep, n0, m0 = 40, 100, 10
 t0 = 5
-length, precision = 50, 10
+length, precision = 150, 10
 
 
 def collect_inner_samples(m, gamma, theta):
@@ -50,7 +50,7 @@ def sample():
     val_list =[]
     for i in range(length):
         in_list = []
-        for j in range(10):
+        for j in range(rep):
             now = datetime.datetime.now()
             print("i: ", i, " j: ", j, " time: ", now - begin)
             samp, der = collect_samples(n0, m0, (t0 + i/precision))
