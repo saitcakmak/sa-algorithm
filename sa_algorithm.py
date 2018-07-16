@@ -23,7 +23,7 @@ n0, m0 = 100, 10
 eps_num = 1
 eps_denom = 100
 eps_power = 0.6
-linear_coef = 0.5
+linear_coef = 1
 
 
 def collect_inner_samples(m, gamma, theta):
