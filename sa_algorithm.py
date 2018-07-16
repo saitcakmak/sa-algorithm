@@ -20,8 +20,8 @@ theta0 = 3
 n0, m0 = 100, 10
 
 # step size epsilon is similar to that of gasso
-eps_num = 10
-eps_denom = 1000
+eps_num = 1
+eps_denom = 100
 eps_power = 0.6
 linear_coef = 0.5
 
