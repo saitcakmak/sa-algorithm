@@ -17,14 +17,14 @@ std_gamma = 0.1
 alpha = 0.9
 
 theta0 = 3
-n_m_ratio = 1
+n_m_ratio0 = 0.1
 n0 = 100
 
 # step size epsilon is similar to that of gasso
-eps_num = 1
-eps_denom = 100
+eps_num0 = 1
+eps_denom0 = 100
 eps_power = 0.6
-linear_coef = 1
+linear_coef0 = 1
 
 
 def collect_inner_samples(m, gamma, theta):
@@ -71,7 +71,7 @@ def calc_der(n, m, theta):
     return np.average(cvar_list), np.average(cvar_der_list)
 
 
-def fixed_budget(iter_count, t0=theta0, mult=4):
+def fixed_budget(iter_count, t0=theta0, mult=4, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
     """
     start with mu0 and follow the algorithm from there
     use the iterative algorithm and map the evolution of the objective function value
@@ -100,7 +100,7 @@ def fixed_budget(iter_count, t0=theta0, mult=4):
     return theta_list, val_list, der_list, eps_list
 
 
-def linear_budget(iter_count, t0=theta0):
+def linear_budget(iter_count, t0=theta0, linear_coef=linear_coef0, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
     """
     start with mu0 and follow the algorithm from there
     use the iterative algorithm and map the evolution of the objective function value
@@ -130,7 +130,7 @@ def linear_budget(iter_count, t0=theta0):
     return theta_list, val_list, der_list, eps_list
 
 
-def dynamic_step_linear_budget(iter_count, t0=theta0):
+def dynamic_step_linear_budget(iter_count, t0=theta0, linear_coef=linear_coef0, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
     """
     start with mu0 and follow the algorithm from there
     use the iterative algorithm and map the evolution of the objective function value
