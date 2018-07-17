@@ -6,11 +6,11 @@ from simple_quad import quad
 from simple_quadv2 import quadv2
 from simple_quadv3 import quadv3
 from prod_inv import prod
-from investment import invest, investv2
+from investment import invest, investv2, investv3
 start = datetime.datetime.now()
 
-prob = investv2
-prob_str = "investv2"
+prob = investv3
+prob_str = "investv3"
 
 mu_gamma = 0.1
 std_gamma = 0.02
