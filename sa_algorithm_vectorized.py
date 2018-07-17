@@ -9,8 +9,8 @@ from prod_inv import prod
 from investment import invest, investv2, investv3
 start = datetime.datetime.now()
 
-prob = investv3
-prob_str = "investv3"
+prob = invest
+prob_str = "invest"
 
 mu_gamma = 0.1
 std_gamma = 0.05
@@ -21,7 +21,7 @@ n_m_ratio0 = 0.1
 n0 = 100
 
 # step size epsilon is similar to that of gasso
-eps_num0 = 1
+eps_num0 = 5
 eps_denom0 = 100
 eps_power = 0.6
 linear_coef0 = 1
