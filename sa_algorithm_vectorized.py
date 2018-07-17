@@ -13,7 +13,7 @@ prob = investv3
 prob_str = "investv3"
 
 mu_gamma = 0.1
-std_gamma = 0.02
+std_gamma = 0.05
 alpha = 0.9
 
 theta0 = np.array([3, 3, 3, 3, 3])
