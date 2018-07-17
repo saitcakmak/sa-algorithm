@@ -4,7 +4,6 @@ from multiprocessing import Pool as ThreadPool
 from mm1_toy import queue
 from simple_quad import quad
 from simple_quadv2 import quadv2
-from mm1_toy5x import queue5x
 from simple_quadv3 import quadv3
 from prod_inv import prod
 start = datetime.datetime.now()
