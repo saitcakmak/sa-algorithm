@@ -85,7 +85,7 @@ def fixed_budget(iter_count, t0=theta0, mult=4, eps_num=eps_num0, eps_denom=eps_
     n = mult * n0
     for k in range(iter_count):
         eps = eps_num / (eps_denom + k) ** eps_power
-        val, der = calc_der(n, n * n_m_ratio, theta_list[k])
+        val, der = calc_der(n, int(n * n_m_ratio), theta_list[k])
         theta_next = theta_list[k] - eps * der
         theta_list.append(theta_next)
         val_list.append(val)
@@ -115,7 +115,7 @@ def linear_budget(iter_count, t0=theta0, linear_coef=linear_coef0, eps_num=eps_n
     for k in range(iter_count):
         eps = eps_num / (eps_denom + k) ** eps_power
         n = n0 + int(linear_coef * k)
-        val, der = calc_der(n, n * n_m_ratio, theta_list[k])
+        val, der = calc_der(n, int(n * n_m_ratio), theta_list[k])
         theta_next = theta_list[k] - eps * der
         theta_list.append(theta_next)
         val_list.append(val)
@@ -147,7 +147,7 @@ def dynamic_step_linear_budget(iter_count, t0=theta0, linear_coef=linear_coef0, 
     for k in range(iter_count):
         eps = eps_num / (eps_denom + s) ** eps_power
         n = n0 + int(linear_coef * k)
-        val, der = calc_der(n, n * n_m_ratio, theta_list[k])
+        val, der = calc_der(n, int(n * n_m_ratio), theta_list[k])
         theta_next = theta_list[k] - eps * der
         theta_list.append(theta_next)
         val_list.append(val)
