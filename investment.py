@@ -16,7 +16,7 @@ base = 0.04
 def invest(gamma, theta, seed=0):
     if seed:
         np.random.seed(seed)
-    x = np.random.multivariate_normal(base + gamma * b, 0.3 * gamma * np.diag(b))
+    x = np.random.multivariate_normal(0, np.diag(b)) * 0.3 * gamma + base + gamma * b
     cap = sum(theta)
     val = c1 * cap + c2 * cap ** 2 - np.dot(theta, x)
     der = c1 + 2 * c2 * cap - x
@@ -26,7 +26,7 @@ def invest(gamma, theta, seed=0):
 def investv2(gamma, theta, seed=0):
     if seed:
         np.random.seed(seed)
-    x = np.random.multivariate_normal(base + gamma * b, 0.4 * gamma * np.diag(np.square(b)))
+    x = np.random.multivariate_normal(0, np.diag(np.square(b))) * 0.4 * gamma + base + gamma * b
     cap = sum(theta)
     val = c1 * cap + c2 * cap ** 2 - np.dot(theta, x)
     der = c1 + 2 * c2 * cap - x
@@ -36,7 +36,7 @@ def investv2(gamma, theta, seed=0):
 def investv3(gamma, theta, seed=0):
     if seed:
         np.random.seed(seed)
-    x = np.random.multivariate_normal(base + gamma * b, 0.5 * gamma * np.diag(np.power(b, 3)))
+    x = np.random.multivariate_normal(0, np.diag(np.power(b, 3))) * 0.5 * gamma + base + gamma * b
     cap = sum(theta)
     val = c1 * cap + c2 * cap ** 2 - np.dot(theta, x)
     der = c1 + 2 * c2 * cap - x
