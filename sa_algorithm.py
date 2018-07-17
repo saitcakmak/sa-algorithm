@@ -9,15 +9,15 @@ from simple_quadv3 import quadv3
 from prod_inv import prod
 start = datetime.datetime.now()
 
-prob = prod
-prob_str = "prod"
+prob = quad
+prob_str = "quad"
 
 mu_gamma = 1
 std_gamma = 0.1
 alpha = 0.9
 
-theta0 = 3
-n_m_ratio0 = 0.1
+theta0 = 30
+n_m_ratio0 = 0.5
 n0 = 100
 
 # step size epsilon is similar to that of gasso
