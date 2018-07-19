@@ -29,7 +29,6 @@ def one_run():
     P_f = 10 * np.random.normal(MU_d, SIGMA_d, K) + 5 * np.random.normal(MU_t, SIGMA_t, K)
 
     exp_profit = P_c - P_f
-# TODO: refine conv
     conv_prob = 1 - 0.005 * P_c
     unif = np.random.random_sample(K)
 
