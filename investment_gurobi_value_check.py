@@ -5,14 +5,13 @@ model (34) with CVaR replaced with expectation
 """
 from gurobipy import *
 import numpy as np
-import datetime
 
-start = datetime.datetime.now()
+
 b = np.array([1, 1.2, 0.7, 1.4, 0.85])
 c1 = 0.001
 c2 = 0.005
 base = 0.04
-n, m = 1000, 4000
+n, m = 400, 1
 delta = 0.9
 mu_gamma = 0.1
 std_gamma = 0.06
@@ -30,13 +29,12 @@ model.setObjective(alpha + (1/((1 - delta) * n)) * quicksum(u), GRB.MINIMIZE)
 
 # constraints:
 for i in range(n):
-    now = datetime.datetime.now()
-    print("iter: ", i, " time: ", (now-start))
+    print("iter: ", i)
     inner_sum = 0
     gamma = np.random.randn() * std_gamma + mu_gamma
     # generate inner expectation
     for j in range(m):
-        r = np.random.multivariate_normal(base + gamma * b, 0.5 * np.diag(np.power(b, 3)))
+        r = base + gamma * b
         cap = quicksum(theta)
         val = c1 * cap + c2 * cap * cap - quicksum(theta[k] * r[k] for k in range(5))
         inner_sum += val
@@ -47,7 +45,7 @@ for i in range(n):
 model.optimize()
 print("objective: ", model.objVal)
 print("theta: ", theta)
-# print("alpha: ", alpha)
+print("alpha: ", alpha)
 # print("u: ", u)
 
 

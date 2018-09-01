@@ -13,16 +13,16 @@ prob = investv3
 prob_str = "investv3"
 
 mu_gamma = 0.1
-std_gamma = 0.05
+std_gamma = 0.06
 alpha = 0.9
 
 theta0 = np.array([3, 3, 3, 3, 3])
-n_m_ratio0 = 0.1
+n_m_ratio0 = 1
 n0 = 100
 
 # step size epsilon is similar to that of gasso
-eps_num0 = 5
-eps_denom0 = 100
+eps_num0 = 1
+eps_denom0 = 20
 eps_power = 0.6
 linear_coef0 = 1
 
@@ -71,7 +71,7 @@ def calc_der(n, m, theta):
     return np.average(cvar_list), np.average(cvar_der_list, 0)
 
 
-def fixed_budget(iter_count, t0=theta0, mult=4, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
+def fixed_budget(iter_count, t0=theta0, mult=10, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
     """
     start with mu0 and follow the algorithm from there
     use the iterative algorithm and map the evolution of the objective function value
@@ -128,7 +128,6 @@ def linear_budget(iter_count, t0=theta0, linear_coef=linear_coef0, eps_num=eps_n
             np.save(prob_str + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_val", val_list)
             np.save(prob_str + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(t0) + "_mu" + str(mu_gamma) + "_std" + str(std_gamma) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_iter_" + str(k) + "_der", der_list)
     return theta_list, val_list, der_list, eps_list
-
 
 
 end = datetime.datetime.now()
