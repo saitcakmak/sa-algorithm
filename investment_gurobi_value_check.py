@@ -8,7 +8,7 @@ import numpy as np
 from investment_params import b, c1, c2, base
 
 
-n, m = 400, 1
+n, m = 40000, 1
 delta = 0.9
 mu_gamma = 0.1
 std_gamma = 0.06
