@@ -16,7 +16,7 @@ mu_gamma = 0.1
 std_gamma = 0.06
 alpha = 0.9
 
-theta0 = np.array([3, 3, 3, 3, 3])
+theta0 = np.array([0, 0, 0, 0, 0])
 n_m_ratio0 = 1
 n0 = 100
 
