@@ -16,9 +16,9 @@ std_gamma = 0.06
 # start gurobi model
 model = Model("invest")
 # actual decision variables
-theta = model.addVars(range(5), name="theta", lb=-10000)
+theta = model.addVars(range(5), name="theta", lb=-GRB.INFINITY)
 # the CVaR decision variable
-alpha = model.addVar(name="alpha", lb=-10000)
+alpha = model.addVar(name="alpha", lb=-GRB.INFINITY)
 # auxiliary decision variables for each CVaR sample
 u = model.addVars(range(n), lb=0, name="u")
 # set objective value
