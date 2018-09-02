@@ -6,12 +6,9 @@ model (34) with CVaR replaced with expectation
 from gurobipy import *
 import numpy as np
 import datetime
+from investment_params import b, c1, c2, base
 
 start = datetime.datetime.now()
-b = np.array([1, 1.2, 0.7, 1.4, 0.85])
-c1 = 0.001
-c2 = 0.005
-base = 0.04
 n, m = 1000, 4000
 delta = 0.9
 mu_gamma = 0.1
@@ -48,6 +45,5 @@ model.optimize()
 print("objective: ", model.objVal)
 print("theta: ", theta)
 # print("alpha: ", alpha)
-# print("u: ", u)
 
 
