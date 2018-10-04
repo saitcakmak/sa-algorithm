@@ -6,13 +6,12 @@ model (34) with CVaR replaced with expectation
 from gurobipy import *
 import numpy as np
 import datetime
-from investment_params import b, c1, c2, base
+from investment_params import *
+from gamma_params import *
 
 start = datetime.datetime.now()
 n, m = 1000, 100
 delta = 0.9
-mu_gamma = 0.1
-std_gamma = 0.06
 
 
 def single_run():
@@ -20,6 +19,8 @@ def single_run():
     model = Model("invest")
     # actual decision variables
     theta = model.addVars(range(5), name="theta", lb=-GRB.INFINITY)
+    # short sell amount variables
+    theta_minus = model.addVars(range(5), name="theta_minus", lb=0)
     # the CVaR decision variable
     alpha = model.addVar(name="alpha", lb=-GRB.INFINITY)
     # auxiliary decision variables for each CVaR sample

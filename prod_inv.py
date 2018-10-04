@@ -8,7 +8,7 @@ c = 0.5
 h = 0.1
 b = 0.2
 n = 20
-r = [0]
+r = [0.0]
 
 
 def prod(gamma, theta, seed=0):

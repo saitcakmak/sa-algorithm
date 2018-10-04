@@ -5,18 +5,20 @@ model (34) with CVaR replaced with expectation
 """
 from gurobipy import *
 import numpy as np
-from investment_params import b, c1, c2, base
+from investment_params import *
+from gamma_params import *
 
 
-n, m = 40000, 1
+n, m = 10000, 1
 delta = 0.9
-mu_gamma = 0.1
-std_gamma = 0.06
+
 
 # start gurobi model
 model = Model("invest")
 # actual decision variables
 theta = model.addVars(range(5), name="theta", lb=-GRB.INFINITY)
+# short sell amount variables
+theta_minus = model.addVars(range(5), name="theta_minus", lb=0)
 # the CVaR decision variable
 alpha = model.addVar(name="alpha", lb=-GRB.INFINITY)
 # auxiliary decision variables for each CVaR sample
@@ -25,6 +27,9 @@ u = model.addVars(range(n), lb=0, name="u")
 model.setObjective(alpha + (1/((1 - delta) * n)) * quicksum(u), GRB.MINIMIZE)
 
 # constraints:
+cap = quicksum(theta)
+short = quicksum(theta_minus)
+model.addConstrs((-theta[i] <= theta_minus[i] for i in range(5)), name="short_val")
 for i in range(n):
     print("iter: ", i)
     inner_sum = 0
@@ -32,16 +37,21 @@ for i in range(n):
     # generate inner expectation
     for j in range(m):
         r = base + gamma * b
-        cap = quicksum(theta)
-        val = c1 * cap + c2 * cap * cap - quicksum(theta[k] * r[k] for k in range(5))
+        val = c1 * cap + c2 * cap * cap + c3 * short - quicksum(theta[k] * r[k] for k in range(5))
         inner_sum += val
     model.addConstr(inner_sum/m - alpha <= u[i], "u" + str(i))
 
 # model.write("out.lp")
 # solve the model
 model.optimize()
+t_return = []
+t_m_return = []
+for i in range(5):
+    t_return.append(theta[i].X)
+    t_m_return.append(theta_minus[i].X)
 print("objective: ", model.objVal)
-print("theta: ", theta)
-print("alpha: ", alpha)
+print("theta: ", t_return)
+print("theta_minus: ", t_m_return)
+print("alpha: ", alpha.X)
 
 

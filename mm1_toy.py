@@ -9,11 +9,14 @@ the formula for derivative is explained in handwritten notes
 import numpy as np
 
 
+N = 100
+
+
 def queue(lam, mu, seed=0):
     if seed:
         np.random.seed(seed)
-    arrival_seed = np.random.random(100)
-    service_seed = np.random.random(100)
+    arrival_seed = np.random.random(N)
+    service_seed = np.random.random(N)
     arrival_log = np.log(arrival_seed)
     service_log = np.log(service_seed)
 
@@ -25,7 +28,7 @@ def queue(lam, mu, seed=0):
     departure.append(arrival[0] - (1/mu) * service_log[0])
     busy = service_log[0]
     busy_period.append(busy)
-    for i in range(1, 100):
+    for i in range(1, N):
         arrival.append(arrival[i-1] - (1/lam) * arrival_log[i])
         if arrival[i] < departure[i-1]:
             busy += service_log[i]

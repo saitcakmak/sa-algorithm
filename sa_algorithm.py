@@ -1,11 +1,13 @@
+"""
+Use the vectorized version if possible. This might be outdated.
+"""
 import numpy as np
 import datetime
 from multiprocessing import Pool as ThreadPool
 from mm1_toy import queue
-from simple_quad import quad
-from simple_quadv2 import quadv2
-from simple_quadv3 import quadv3
+from simple_quad import quad, quadv2, quadv3
 from prod_inv import prod
+
 start = datetime.datetime.now()
 
 prob = quad
