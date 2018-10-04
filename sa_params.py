@@ -10,5 +10,5 @@ n0 = 100
 eps_num0 = 5
 eps_denom0 = 100
 eps_power = 0.8
-linear_coef0 = 0.1
+linear_coef0 = 1
 t_low = 1.1
