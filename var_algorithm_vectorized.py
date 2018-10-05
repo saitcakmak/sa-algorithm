@@ -7,11 +7,13 @@ from prod_inv import prod
 from investment import invest, investv2, investv3, investv4
 from gamma_params import *
 from sa_params import *
+from two_sided_queue import *
+
 
 start = datetime.datetime.now()
 
-prob = investv4
-prob_str = "investv4"
+prob = two_sided_queue
+prob_str = "two_sided_queue"
 
 
 def collect_inner_samples(m, gamma, theta):
