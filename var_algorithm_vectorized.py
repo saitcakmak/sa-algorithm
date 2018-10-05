@@ -68,7 +68,7 @@ def fixed_budget(iter_count, t0=theta0, mult=10, eps_num=eps_num0, eps_denom=eps
     for k in range(iter_count):
         eps = eps_num / (eps_denom + k) ** eps_power
         val, der = calc_der(n, int(n * n_m_ratio), theta_list[k])
-        theta_next = np.array(theta_list[k]) - eps * np.array(der)
+        theta_next = max(np.array(theta_list[k]) - eps * np.array(der), t_low)  # make sure theta is not out of bounds
         theta_list.append(theta_next)
         val_list.append(val)
         der_list.append(der)
@@ -98,7 +98,7 @@ def linear_budget(iter_count, t0=theta0, linear_coef=linear_coef0, eps_num=eps_n
         eps = eps_num / (eps_denom + k) ** eps_power
         n = n0 + int(linear_coef * k)
         val, der = calc_der(n, int(n * n_m_ratio), theta_list[k])
-        theta_next = np.array(theta_list[k]) - eps * np.array(der)
+        theta_next = max(np.array(theta_list[k]) - eps * np.array(der), t_low)  # make sure theta is not out of bounds
         theta_list.append(theta_next)
         val_list.append(val)
         der_list.append(der)
@@ -113,7 +113,7 @@ def linear_budget(iter_count, t0=theta0, linear_coef=linear_coef0, eps_num=eps_n
 
 
 if __name__ == "__main__":
-    linear_budget(1001)
+    linear_budget(2501)
 
 end = datetime.datetime.now()
 print("time: ", end-start)
