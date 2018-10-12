@@ -11,8 +11,8 @@ from two_sided_queue import *
 
 start = datetime.datetime.now()
 
-prob = two_sided_queue
-prob_str = "two_sided_queue"
+prob = queue
+prob_str = "queue"
 
 
 def collect_inner_samples(m, gamma, theta):
@@ -119,7 +119,7 @@ def linear_budget(iter_count, t0=theta0, linear_coef=linear_coef0, eps_num=eps_n
 
 
 if __name__ == "__main__":
-    linear_budget(100001)
+    linear_budget(2001)
 
 end = datetime.datetime.now()
 print("time: ", end-start)
