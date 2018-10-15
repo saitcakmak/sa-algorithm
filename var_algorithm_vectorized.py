@@ -12,8 +12,8 @@ from two_sided_queue import *
 
 start = datetime.datetime.now()
 
-prob = queue
-prob_str = "queue"
+prob = prod
+prob_str = "prod"
 
 
 def collect_inner_samples(m, gamma, theta):
@@ -33,7 +33,7 @@ def collect_samples(n, m, theta):
     arg_list = []
 
     for i in range(n):
-        gamma = np.random.randn() * std_gamma + mu_gamma
+        gamma = 0.5 + np.random.gamma(mu_gamma, std_gamma)
         arg_list.append((m, gamma, theta))
     pool = ThreadPool()
     results = pool.starmap(collect_inner_samples, arg_list)
