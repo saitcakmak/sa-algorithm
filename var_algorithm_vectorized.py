@@ -100,7 +100,7 @@ def linear_budget(iter_count, t0=theta0, linear_coef=linear_coef0, eps_num=eps_n
     for t in range(iter_count):
         eps = eps_num / (eps_denom + t) ** eps_power
         n = n0 + int(linear_coef * t)
-        k = int(n / 1000)  # k in the algorithm definition
+        k = int(n / 100)  # k in the algorithm definition
         v_list = []
         d_list = []
         for i in range(k):
