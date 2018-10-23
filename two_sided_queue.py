@@ -37,3 +37,35 @@ def two_sided_queue(gamma, theta, seed=0):
     obj = theta * wait + theta ** 2
     der = wait + theta * np.sum(w_der) + 2 * theta
     return obj, der
+
+
+def two_sided_ext(gamma, theta, seed=0):
+    if seed:
+        np.random.seed(seed)
+    mu = gamma[0] * np.log(theta)  # if this changed, then change derivative calculation as well
+    mu_prime = gamma[0] / theta
+    lam = gamma[1] * np.exp(theta / gamma[2])  # same with this
+    lam_prime = - gamma[1] * np.exp(theta / gamma[2]) / gamma[2]
+    ia_seed = np.random.random(N)
+    is_seed = np.random.random(N)
+    ia_log = np.log(ia_seed)
+    is_log = np.log(is_seed)
+    a_log = [ia_log[0]]
+    s_log = [is_log[0]]
+    for i in range(1, N):
+        a_log.append(a_log[i-1] + ia_log[i])
+        s_log.append(s_log[i-1] + is_log[i])
+    a_val = (-1 / lam) * np.array(a_log)
+    s_val = (-1 / mu) * np.array(s_log)
+    w_list = []
+    w_der = []
+    for i in range(N):
+        w_list.append(max(0, s_val[i] - a_val[i]))  # Waiting time for nth customer
+        w_der.append(int(w_list[i] > 0) * ((1 / mu ** 2) * s_log[i] * mu_prime - (1 / lam ** 2) * a_log[i] * lam_prime))  # derivative of it
+    wait = np.sum(w_list)
+    wait_der = np.sum(w_der)
+    # a_n = - (1 / lam) * a_log[N-1]
+    # a_n_prime = (1 / lam ** 2) * a_log[N-1] * lam_prime
+    obj = wait - 0.2 * theta * lam  # update both
+    der = wait_der - 0.2 * (lam + theta * lam_prime)
+    return obj, der

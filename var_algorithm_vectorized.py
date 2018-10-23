@@ -5,15 +5,15 @@ from mm1_toy import queue
 from simple_quad import quad, quadv2, quadv3
 from prod_inv import prod
 from investment import invest, investv2, investv3, investv4
-from gamma_params import *
+from gamma_params import mu_gamma, std_gamma
 from sa_params import *
 from two_sided_queue import *
 
 
 start = datetime.datetime.now()
 
-prob = prod
-prob_str = "prod"
+prob = two_sided_ext
+prob_str = "two_sided_ext"
 
 
 def collect_inner_samples(m, gamma, theta):
@@ -33,7 +33,7 @@ def collect_samples(n, m, theta):
     arg_list = []
 
     for i in range(n):
-        gamma = 0.5 + np.random.gamma(mu_gamma, std_gamma)
+        gamma = np.random.multivariate_normal(mu_gamma, std_gamma)
         arg_list.append((m, gamma, theta))
     pool = ThreadPool()
     results = pool.starmap(collect_inner_samples, arg_list)
@@ -115,7 +115,7 @@ def linear_budget(iter_count, t0=theta0, linear_coef=linear_coef0, eps_num=eps_n
 
 
 if __name__ == "__main__":
-    linear_budget(2001)
+    linear_budget(1001)
 
 end = datetime.datetime.now()
 print("time: ", end-start)
