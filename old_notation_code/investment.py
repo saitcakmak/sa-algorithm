@@ -5,8 +5,7 @@ the cost of capital is c1 * cap + c2 * cap^2
 v2 has higher variance for higher beta, i.e, std = 0.4 * beta^2
 v3 has even higher variance
 """
-import numpy as np
-from investment_params import *
+from old_notation_code.investment_params import *
 
 
 def invest(gamma, theta, seed=0):

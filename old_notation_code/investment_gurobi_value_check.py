@@ -4,9 +4,8 @@ For reference in modeling, we use Qian2015Uncertainty-Framework pg 22-23
 model (34) with CVaR replaced with expectation
 """
 from gurobipy import *
-import numpy as np
-from investment_params import *
-from gamma_params import *
+from old_notation_code.investment_params import *
+from theta_params import *
 
 
 n, m = 10000, 1

@@ -2,7 +2,7 @@ import numpy as np
 
 alpha = 0.75
 
-theta0 = 5
+x0 = 5
 n_m_ratio0 = 0.1
 n0 = 100
 
@@ -11,4 +11,4 @@ eps_num0 = 5
 eps_denom0 = 100
 eps_power = 0.8
 linear_coef0 = 1
-t_low = 2
+x_low = 2

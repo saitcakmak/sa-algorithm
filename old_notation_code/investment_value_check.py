@@ -1,5 +1,5 @@
 import numpy as np
-from investment_params import b, c1, c2, base
+from old_notation_code.investment_params import b, c1, c2, base
 
 theta = [0.7522, 0.5212, 1.3921, 0.3893, 1.0155]
 

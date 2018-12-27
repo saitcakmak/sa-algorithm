@@ -4,9 +4,7 @@ Use the vectorized version if possible. This might be outdated.
 import numpy as np
 import datetime
 from multiprocessing import Pool as ThreadPool
-from mm1_toy import queue
-from simple_quad import quad, quadv2, quadv3
-from prod_inv import prod
+from old_notation_code.simple_quad import quad
 
 start = datetime.datetime.now()
 
