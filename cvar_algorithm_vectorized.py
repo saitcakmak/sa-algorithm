@@ -12,6 +12,7 @@ prob_str = "two_sided_ext"
 
 def collect_inner_samples(m, theta, x):
     global prob
+    np.random.seed()
     inner_list = []
     inner_derivative_list = []
     for j in range(m):

@@ -16,6 +16,7 @@ prob_str = "queue"
 
 def collect_inner_samples(m, theta, x):
     global prob
+    np.random.seed()
     inner_list = []
     inner_derivative_list = []
     for j in range(m):
@@ -76,4 +77,4 @@ def main_run(true_theta=10.0, n=1000, m=1000, x=6.0, q_alpha=0.8, replication=10
 
 
 if __name__ == "__main__":
-    main_run()
+    print(main_run())

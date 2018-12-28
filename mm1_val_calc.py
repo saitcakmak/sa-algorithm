@@ -15,6 +15,7 @@ count = 1
 
 def collect_inner_samples(m, theta, x):
     global prob, count
+    np.random.seed()
     print("count: ", count, " time: ", (datetime.datetime.now() - start))
     count += 1
     inner_list = []
