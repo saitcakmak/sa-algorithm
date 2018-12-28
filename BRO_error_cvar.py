@@ -67,7 +67,7 @@ def main_run(true_theta=10.0, n=1000, m=1000, x=6.0, q_alpha=0.8, replication=10
     results = {}
     runs = []
     for i in range(replication):
-        print("sample_count: ", sample_count, ", run count: ", i, " time: ", (datetime.datetime.now() - start))
+        print("run count: ", i, " time: ", (datetime.datetime.now() - start))
         runs.append(single_run(true_theta, n, m, x, q_alpha))
     results["true"] = runs
     output = {"params": params, "results": results}
