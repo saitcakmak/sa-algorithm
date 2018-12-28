@@ -73,7 +73,7 @@ def single_run(prior_alpha, prior_beta, true_mean, sample_count, n, m, x, q_alph
     return np.average(cvar_list)
 
 
-def main_run(prior_alpha=2.0, prior_beta=0.0, true_mean=10.0, n=1000, m=1000, x=6.0, q_alpha=0.8, replication=400, budget_list=[10, 100, 1000, 10000]):
+def main_run(prior_alpha=2.0, prior_beta=0.0, true_mean=10.0, n=400, m=1000, x=6.0, q_alpha=0.5, replication=400, budget_list=[10, 100, 1000, 10000]):
     """
     loop through the single run with increasing sample sizes to show the convergence
     save the data and plot it in a meaningful way
@@ -88,7 +88,7 @@ def main_run(prior_alpha=2.0, prior_beta=0.0, true_mean=10.0, n=1000, m=1000, x=
             runs.append(single_run(prior_alpha, prior_beta, true_mean, sample_count, n, m, x, q_alpha))
         results[sample_count] = runs
     output = {"params": params, "results": results}
-    np.save("bro_convergence_cvar_budget_" + str(budget_list) + ".npy", output)
+    np.save("bro_convergence_cvar_alpha_" + str(q_alpha) + "_budget_" + str(budget_list) + ".npy", output)
     return output
 
 
