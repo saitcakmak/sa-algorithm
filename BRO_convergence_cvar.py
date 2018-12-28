@@ -1,7 +1,7 @@
 """
 this code aims to show the convergence of the BRO-CVaR problem to the normal distribution
 We sample using a fixed x and different posterior distributions for the theta
-The aim is to show the convergence of the samples by drawing etc
+The aim is to show the convergence of the samples by drawing etc.
 """
 import numpy as np
 import datetime
