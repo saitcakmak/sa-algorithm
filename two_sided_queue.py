@@ -44,8 +44,8 @@ def two_sided_ext(theta, x, seed=0):
         np.random.seed(seed)
     mu = theta[0] * np.log(x)  # if this changed, then change derivative calculation as well
     mu_prime = theta[0] / x
-    lam = theta[1] * np.exp(x / theta[2])  # same with this
-    lam_prime = - theta[1] * np.exp(x / theta[2]) / theta[2]
+    lam = theta[1] * np.exp(- x / theta[2])  # same with this
+    lam_prime = - theta[1] * np.exp(- x / theta[2]) / theta[2]
     ia_seed = np.random.random(N)
     is_seed = np.random.random(N)
     ia_log = np.log(ia_seed)
@@ -64,8 +64,6 @@ def two_sided_ext(theta, x, seed=0):
         w_der.append(int(w_list[i] > 0) * ((1 / mu ** 2) * s_log[i] * mu_prime - (1 / lam ** 2) * a_log[i] * lam_prime))  # derivative of it
     wait = np.sum(w_list)
     wait_der = np.sum(w_der)
-    # a_n = - (1 / lam) * a_log[N-1]
-    # a_n_prime = (1 / lam ** 2) * a_log[N-1] * lam_prime
     obj = wait - 0.2 * x * lam  # update both
     der = wait_der - 0.2 * (lam + x * lam_prime)
     return obj, der
