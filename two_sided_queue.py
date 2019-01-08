@@ -10,33 +10,7 @@ To keep with the notation, price is x and lambda is theta
 import numpy as np
 
 
-N = 100
-
-
-# def two_sided_queue(gamma, theta, seed=0):
-#     if seed:
-#         np.random.seed(seed)
-#     mu = 5 * np.log(theta)  # if this changed, then change w_der calculation as well
-#     ia_seed = np.random.random(N)
-#     is_seed = np.random.random(N)
-#     ia_log = np.log(ia_seed)
-#     is_log = np.log(is_seed)
-#     a_log = [ia_log[0]]
-#     s_log = [is_log[0]]
-#     for i in range(1, N):
-#         a_log.append(a_log[i-1] + ia_log[i])
-#         s_log.append(s_log[i-1] + is_log[i])
-#     a_val = (-1 / gamma) * np.array(a_log)
-#     s_val = (-1 / mu) * np.array(s_log)
-#     w_list = []
-#     w_der = []
-#     for i in range(N):
-#         w_list.append(max(0, s_val[i] - a_val[i]))  # Waiting time for nth customer
-#         w_der.append(int(w_list[i] > 0) * (1 / mu ** 2) * s_log[i] * 5 / theta)  # derivative of it
-#     wait = np.sum(w_list)
-#     obj = theta * wait + theta ** 2
-#     der = wait + theta * np.sum(w_der) + 2 * theta
-#     return obj, der
+M = 1000
 
 
 def two_sided_ext(theta, x, seed=0):
@@ -46,20 +20,20 @@ def two_sided_ext(theta, x, seed=0):
     mu_prime = theta[0] / x
     lam = theta[1] * np.exp(- x / theta[2])  # same with this
     lam_prime = - theta[1] * np.exp(- x / theta[2]) / theta[2]
-    ia_seed = np.random.random(N)
-    is_seed = np.random.random(N)
+    ia_seed = np.random.random(M)
+    is_seed = np.random.random(M)
     ia_log = np.log(ia_seed)
     is_log = np.log(is_seed)
     a_log = [ia_log[0]]
     s_log = [is_log[0]]
-    for i in range(1, N):
+    for i in range(1, M):
         a_log.append(a_log[i-1] + ia_log[i])
         s_log.append(s_log[i-1] + is_log[i])
     a_val = (-1 / lam) * np.array(a_log)
     s_val = (-1 / mu) * np.array(s_log)
     w_list = []
     w_der = []
-    for i in range(N):
+    for i in range(M):
         w_list.append(max(0, s_val[i] - a_val[i]))  # Waiting time for nth customer
         w_der.append(int(w_list[i] > 0) * ((1 / mu ** 2) * s_log[i] * mu_prime - (1 / lam ** 2) * a_log[i] * lam_prime))  # derivative of it
     wait = np.sum(w_list)

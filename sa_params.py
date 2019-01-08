@@ -3,11 +3,11 @@ import numpy as np
 alpha = 0.75
 
 x0 = 5
-n_m_ratio0 = 0.1
+n_m_ratio0 = 0.25
 n0 = 100
 
 # step size epsilon is similar to that of gasso
-eps_num0 = 50
+eps_num0 = 250
 eps_denom0 = 100
 eps_power = 0.8
 linear_coef0 = 1

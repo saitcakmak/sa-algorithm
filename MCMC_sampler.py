@@ -3,11 +3,11 @@ import datetime
 
 
 start = datetime.datetime.now()
-N = 40
-prices = [5, 6, 7, 8, 10, 12, 15]
+N = 100
+prices = [5, 7.5, 10, 12.5, 15]
 prior_mu = [np.log(22), np.log(8), np.log(18)]
 prior_sigma = [2, 1, 2]
-candidate_cov = np.diag([1, 0.25, 1])
+candidate_cov = np.diag([0.04, 0.01, 0.04])
 delta = 0.000001
 theta_c = [25, 10, 15]
 
@@ -116,9 +116,9 @@ if __name__ == "__main__":
     length = 10000000
     t_start = [10, 10, 10]
     run = mcmc_run(length, t_start)
-    params = {"len": length, "t_start": t_start, "N": N, "prices": prices, "prior_mu": prior_mu,
+    params = {"len": length, "t_start": t_start, "N": N, "prices": prices, "prior_mu": prior_mu, "data": data,
               "prior_sigma": prior_sigma, "covariance": candidate_cov, "delta": delta, "t_correct": theta_c}
     out = {"run": run, "params": params}
-    np.save("mcmc_len_" + str(length) + "_.npy", out)
+    np.save("mcmc_len_" + str(length) + ".npy", out)
     end = datetime.datetime.now()
     print("done! time: ", end-start)
