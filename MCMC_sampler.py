@@ -3,7 +3,7 @@ import datetime
 
 
 start = datetime.datetime.now()
-N = 100
+N = 50
 prices = [5, 7.5, 10, 12.5, 15]
 prior_mu = [np.log(22), np.log(8), np.log(18)]
 prior_sigma = [2, 1, 2]
