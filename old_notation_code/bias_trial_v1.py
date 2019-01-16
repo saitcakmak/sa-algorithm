@@ -59,7 +59,7 @@ print("samples ready")
 
 for i in range(100, n+1, 100):
     for j in range(10, m+1, 10):
-        print("der n=", i, "m=", j, calc_der(s_list, d_list, i, j))
+        print("der M=", i, "m=", j, calc_der(s_list, d_list, i, j))
 
 
 end = datetime.datetime.now()

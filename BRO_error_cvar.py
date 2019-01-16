@@ -64,7 +64,7 @@ def main_run(true_theta=10.0, n=1000, m=1000, x=6.0, q_alpha=0.8, replication=10
     save the data and plot it in a meaningful way
     """
     params = {"true_theta": true_theta,
-              "n": n, "m": m, "x": x, "q_alpha": q_alpha, "replication": replication}
+              "M": n, "m": m, "x": x, "q_alpha": q_alpha, "replication": replication}
     results = {}
     runs = []
     for i in range(replication):

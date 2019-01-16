@@ -9,14 +9,15 @@ the formula for derivative is explained in handwritten notes
 import numpy as np
 
 
-N = 100
+M = 100
+a = 0.005
 
 
-def queue(lam, mu, seed=0):
+def mm1(lam, mu, seed=0):
     if seed:
         np.random.seed(seed)
-    arrival_seed = np.random.random(N)
-    service_seed = np.random.random(N)
+    arrival_seed = np.random.random(M)
+    service_seed = np.random.random(M)
     arrival_log = np.log(arrival_seed)
     service_log = np.log(service_seed)
 
@@ -28,7 +29,7 @@ def queue(lam, mu, seed=0):
     departure.append(arrival[0] - (1/mu) * service_log[0])
     busy = service_log[0]
     busy_period.append(busy)
-    for i in range(1, N):
+    for i in range(1, M):
         arrival.append(arrival[i-1] - (1/lam) * arrival_log[i])
         if arrival[i] < departure[i-1]:
             busy += service_log[i]
@@ -38,16 +39,16 @@ def queue(lam, mu, seed=0):
         busy_period.append(busy)
 
     system_time = np.asarray(departure) - np.asarray(arrival)
-    cost = np.sum(system_time) + mu ** 2 * 10
-    derivative = sum(busy_period) / mu ** 2 + 20 * mu
+    cost = np.average(system_time) + mu ** 2 * a
+    derivative = np.average(busy_period) / mu ** 2 + a * 2 * mu
     return cost, derivative
 
 
 def queue_with_theta_der(lam, mu, seed=0):
     if seed:
         np.random.seed(seed)
-    arrival_seed = np.random.random(N)
-    service_seed = np.random.random(N)
+    arrival_seed = np.random.random(M)
+    service_seed = np.random.random(M)
     arrival_log = np.log(arrival_seed)
     service_log = np.log(service_seed)
 
@@ -60,7 +61,7 @@ def queue_with_theta_der(lam, mu, seed=0):
     busy = 0
     last = 0
     busy_period.append(busy)
-    for i in range(1, N):
+    for i in range(1, M):
         arrival.append(arrival[i-1] - (1/lam) * arrival_log[i])
         if arrival[i] < departure[i-1]:
             busy = last
@@ -71,7 +72,7 @@ def queue_with_theta_der(lam, mu, seed=0):
         busy_period.append(busy)
 
     system_time = np.asarray(departure) - np.asarray(arrival)
-    cost = np.sum(system_time) + mu ** 2 * 10
-    derivative = -sum(busy_period) / lam ** 2
+    cost = np.average(system_time) + mu ** 2 * a
+    derivative = -np.average(busy_period) / lam ** 2
     return cost, derivative
 

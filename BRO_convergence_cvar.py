@@ -80,7 +80,7 @@ def main_run(prior_alpha=2.0, prior_beta=0.0, true_theta=10.0, n=1000, m=1000, x
     save the data and plot it in a meaningful way
     """
     params = {"prior_alpha": prior_alpha, "prior_beta": prior_beta, "true_theta": true_theta,
-              "n": n, "m": m, "x": x, "q_alpha": q_alpha, "replication": replication}
+              "M": n, "m": m, "x": x, "q_alpha": q_alpha, "replication": replication}
     results = {}
     for sample_count in budget_list:
         runs = []

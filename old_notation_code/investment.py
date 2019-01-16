@@ -55,7 +55,6 @@ def investv5(gamma, theta, seed=0):
     """
     here we have a cost for short selling
     """
-# TODO: add the short selling costs
     if seed:
         np.random.seed(seed)
     x = np.random.multivariate_normal(base + gamma * b, 0.005 * np.diag(np.power(b, 3)))

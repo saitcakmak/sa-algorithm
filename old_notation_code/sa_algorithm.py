@@ -103,7 +103,7 @@ def linear_budget(iter_count, t0=theta0, linear_coef=linear_coef0, eps_num=eps_n
     """
     start with mu0 and follow the algorithm from there
     use the iterative algorithm and map the evolution of the objective function value
-    budget increases linearly as follows: n = n0+k, m = m0 + k/10 etc. The constants might change
+    budget increases linearly as follows: M = n0+k, m = m0 + k/10 etc. The constants might change
     :return:
     """
     begin = datetime.datetime.now()
@@ -133,7 +133,7 @@ def dynamic_step_linear_budget(iter_count, t0=theta0, linear_coef=linear_coef0, 
     """
     start with mu0 and follow the algorithm from there
     use the iterative algorithm and map the evolution of the objective function value
-    budget increases linearly as follows: n = n0+k, m = m0 + k/10 etc. The constants might change
+    budget increases linearly as follows: M = n0+k, m = m0 + k/10 etc. The constants might change
     the step size only decreases if the sign of derivative changes
     :return:
     """

@@ -1,14 +1,16 @@
 import datetime
 from multiprocessing import Pool as ThreadPool
-from theta_params import mu_theta, std_theta
 from sa_params import *
 from two_sided_queue import *
 
 
 start = datetime.datetime.now()
 
+string = input("enter output string: ")
 prob = two_sided_ext
-prob_str = "two_sided_ext"
+prob_str = "two_sided_ext_" + string
+data_file = "output/" + input("enter data file name complete with extension: ")
+theta_samples = np.load(data_file).tolist()
 
 
 def collect_inner_samples(m, theta, x):
@@ -24,12 +26,13 @@ def collect_inner_samples(m, theta, x):
 
 
 def collect_samples(n, m, x):
+    global theta_samples
     sample_list = []
     derivative_list = []
     arg_list = []
-
     for i in range(n):
-        theta = np.random.multivariate_normal(mu_theta, std_theta)
+        index = int(np.random.rand()*100000)
+        theta = theta_samples[index]
         arg_list.append((m, theta, x))
     pool = ThreadPool()
     results = pool.starmap(collect_inner_samples, arg_list)
@@ -55,13 +58,11 @@ def linear_budget(iter_count, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0
     """
     start with x_0 and follow the algorithm from there
     use the iterative algorithm and map the evolution of the objective function value
-    budget increases linearly as follows: n = n0+k, m = m0 + k/10 etc. The constants might change
-    :return:
+    budget increases linearly as follows: M = n0+t, m = m0 + t/10 etc. The constants might change
     """
     begin = datetime.datetime.now()
     val_list = []
     der_list = []
-    eps_list = []
     x_list = [x_0]
     for t in range(iter_count):
         eps = eps_num / (eps_denom + t) ** eps_power
@@ -79,18 +80,18 @@ def linear_budget(iter_count, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0
         x_list.append(x_next)
         val_list.append(val)
         der_list.append(der)
-        eps_list.append(eps)
         now = datetime.datetime.now()
-        print("k = ", t, " x = ", x_list[t], " val = ", val, " der = ", der, " time: ", now-begin)
-        if t % 100 == 0:
-            np.save(prob_str + "_VaR" + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_mu" + str(mu_theta) + "_std" + str(std_theta) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_iter_" + str(t) + "_x", x_list)
-            np.save(prob_str + "_VaR" + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_mu" + str(mu_theta) + "_std" + str(std_theta) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_iter_" + str(t) + "_val", val_list)
-            np.save(prob_str + "_VaR" + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_mu" + str(mu_theta) + "_std" + str(std_theta) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_iter_" + str(t) + "_der", der_list)
-    return x_list, val_list, der_list, eps_list
+        print("t = ", t, " x = ", x_list[t], " val = ", val, " der = ", der, " time: ", now-begin)
+        if (t+1) % 100 == 0:
+            np.save("output/" + prob_str + "_VaR" + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_x", x_list)
+            np.save("output/" + prob_str + "_VaR" + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_val", val_list)
+            np.save("output/" + prob_str + "_VaR" + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_der", der_list)
+    return x_list, val_list, der_list
 
 
 if __name__ == "__main__":
-    linear_budget(1001)
+    budget = int(input("enter number of iterations: "))
+    linear_budget(budget)
 
 end = datetime.datetime.now()
 print("time: ", end-start)

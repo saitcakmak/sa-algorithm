@@ -70,7 +70,7 @@ for k in range(rep):
 for i in range(100, 4001, 100):
     dict_res[i]["avg"] = np.average(dict_res[i]['runs'])
     dict_res[i]["std"] = np.std(dict_res[i]['runs'])
-    print("n = ", i, "m = 25, avg = ", dict_res[i]['avg'], "std = ", dict_res[i]['std'])
+    print("M = ", i, "m = 25, avg = ", dict_res[i]['avg'], "std = ", dict_res[i]['std'])
 
 
 end = datetime.datetime.now()

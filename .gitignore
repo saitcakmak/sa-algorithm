@@ -1,5 +1,9 @@
 mcmc_len_10000000_.npy
 temp_out.npy
+old_notation_code/
+old_notation_runs/
+output/old/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
