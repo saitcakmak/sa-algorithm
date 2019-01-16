@@ -222,7 +222,7 @@ if __name__ == "__main__":
         output["cvar_0.8"].append(linear_budget_cvar(budget, 0.8, i))
         output["cvar_0.9"].append(linear_budget_cvar(budget, 0.9, i))
         output["empirical"].append(linear_budget_empirical(budget, i))
-    np.save("output/combined_" + prob_str + "_N_" + str(N) + "_output.npy", output)
+        np.save("output/combined_" + prob_str + "_N_" + str(N) + "_output.npy", output)
 
 end = datetime.datetime.now()
 print("time: ", end-start)
