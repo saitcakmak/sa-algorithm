@@ -53,7 +53,7 @@ def linear_budget_empirical(iter_count, x_0=x0, linear_coef=linear_coef0, eps_nu
 if __name__ == "__main__":
     theta_hat = int(input("enter theta_hat: "))
     budget = int(input("enter number of iterations: "))
-    linear_budget(budget)
+    linear_budget_empirical(budget)
 
 end = datetime.datetime.now()
 print("time: ", end-start)

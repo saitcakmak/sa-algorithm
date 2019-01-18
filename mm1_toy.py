@@ -13,7 +13,7 @@ M = 100
 a = 0.005
 
 
-def mm1(lam, mu, seed=0):
+def mm1(lam, mu, a=a, M=M, seed=0):
     if seed:
         np.random.seed(seed)
     arrival_seed = np.random.random(M)
