@@ -1,14 +1,14 @@
 import datetime
 from multiprocessing import Pool as ThreadPool
 from sa_params import *
-from mm1_toy import mm1
+from prod_inv import prod
 
 
 start = datetime.datetime.now()
 
 string = input("enter output string: ")
-prob = mm1
-prob_str = "mm1_online_" + string
+prob = prod
+prob_str = "prod_online_" + string
 data = []
 post_a = 2
 post_b = 0
@@ -19,7 +19,7 @@ def calculate_posterior(theta_c, N):
     return the posterior parameters
     prior is assumed gamma(2,0)
     the true distribution is exponential with theta_c
-    M is the input data size
+    N is the input data size
     this is done incrementally here. Each M adds to the previous data
     """
     global prob_str, data, post_a, post_b
@@ -28,7 +28,7 @@ def calculate_posterior(theta_c, N):
     data = np.concatenate((data, (-1 / theta_c) * log))
     np.save("output/" + "data_" + prob_str + "_theta_" + str(theta_c) + "_N_list_" + str(N_list) + ".npy", data)
     post_a = post_a + N
-    post_b = post_b + np.sum(data)
+    post_b = np.sum(data)
 
 
 def collect_inner_samples(m, theta, x):
@@ -62,13 +62,14 @@ def collect_samples(n, m, x):
 
 
 def calc_der(n, m, x):
+    global alpha
     sample_list, derivative_list = collect_samples(n, m, x)
 
     sort_index = np.argsort(sample_list)
     sorted_list = sample_list[sort_index]
     sorted_der = derivative_list[sort_index]
 
-    return sorted_list[int(np.ceil(n * alpha))], sorted_der[int(np.ceil(n * alpha))]
+    return sorted_list[int(n * alpha)], sorted_der[int(n * alpha)]
 
 
 def linear_budget(iter_count, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
@@ -110,7 +111,8 @@ def linear_budget(iter_count, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0
 
 
 if __name__ == "__main__":
-    theta_c = int(input("enter theta_c: "))
+    theta_c = float(input("enter theta_c: "))
+    alpha = float(input("enter alpha: "))
     N_list = []
     while True:
         N = int(input("enter the sequence of input sizes - non-cumulative - 0 for exit: "))

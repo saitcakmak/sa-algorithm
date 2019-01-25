@@ -28,7 +28,7 @@ def calculate_posterior(theta_c, N):
     data = np.concatenate((data, (-1 / theta_c) * log))
     np.save("output/" + "data_" + prob_str + "_theta_" + str(theta_c) + "_N_list_" + str(N_list) + ".npy", data)
     post_a = post_a + N
-    post_b = post_b + np.sum(data)
+    post_b = np.sum(data)
 
 
 def collect_inner_samples(m, theta, x):
@@ -106,7 +106,8 @@ def linear_budget(iter_count, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0
 
 
 if __name__ == "__main__":
-    theta_c = int(input("enter theta_c: "))
+    theta_c = float(input("enter theta_c: "))
+    alpha = float(input("enter alpha: "))
     N_list = []
     while True:
         N = int(input("enter the sequence of input sizes - non-cumulative - 0 for exit: "))

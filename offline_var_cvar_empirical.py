@@ -13,28 +13,27 @@ prob_str = "mm1_" + string
 
 def collect_samples_empirical(m, x):
     global prob, theta_hat
+    m = int(m)
     np.random.seed()
-    inner_list = []
-    inner_derivative_list = []
+    inner_list = np.zeros(m)
+    inner_derivative_list = np.zeros(m)
     for j in range(m):
         val, der = prob(theta_hat, x)
-        inner_list.append(val)
-        inner_derivative_list.append(der)
+        inner_list[j] = val
+        inner_derivative_list[j] = der
     return np.average(inner_list), np.average(inner_derivative_list, 0)
 
 
-def calculate_posterior(theta_c, N, run):
+def calculate_posterior(theta_c, N):
     """
     return the posterior parameters
     prior is assumed gamma(2,0)
     the true distribution is exponential with theta_c
     M is the input data size
     """
-    global prob_str
     seed = np.random.random(N)
     log = np.log(seed)
     data = (-1 / theta_c) * log
-    # np.save("output/" + "data_" + prob_str + "_theta_" + str(theta_c) + "_N_" + str(N) + "_run_" + str(run) + ".npy", data)
     a = 2 + N
     b = np.sum(data)
     theta_hat = 1 / np.average(data)
@@ -42,32 +41,32 @@ def calculate_posterior(theta_c, N, run):
 
 
 def collect_inner_samples(m, theta, x):
-    global prob
+    m = int(m)
     np.random.seed()
-    inner_list = []
-    inner_derivative_list = []
+    inner_list = np.zeros(m)
+    inner_derivative_list = np.zeros(m)
     for j in range(m):
         val, der = prob(theta, x)
-        inner_list.append(val)
-        inner_derivative_list.append(der)
+        inner_list[j] = val
+        inner_derivative_list[j] = der
     return np.average(inner_list), np.average(inner_derivative_list, 0)
 
 
 def collect_samples(n, m, x):
     global post_a, post_b
-    sample_list = []
-    derivative_list = []
-    arg_list = []
+    sample_list = np.zeros(n)
+    derivative_list = np.zeros(n)
+    arg_list = np.zeros((n, 3))
     for i in range(n):
         theta = np.random.gamma(post_a, 1/post_b)
-        arg_list.append((m, theta, x))
+        arg_list[i] = (m, theta, x)
     pool = ThreadPool()
-    results = pool.starmap(collect_inner_samples, arg_list)
+    results = pool.starmap(collect_inner_samples, arg_list.tolist())
     pool.close()
     pool.join()
-    for res in results:
-        sample_list.append(res[0])
-        derivative_list.append(res[1])
+    for i in range(n):
+        sample_list[i] = results[i][0]
+        derivative_list[i] = results[i][1]
     return np.array(sample_list), np.array(derivative_list)
 
 
@@ -78,13 +77,13 @@ def calc_der_var(n, m, x, alpha):
     sorted_list = sample_list[sort_index]
     sorted_der = derivative_list[sort_index]
 
-    return sorted_list[int(np.ceil(n * alpha))], sorted_der[int(np.ceil(n * alpha))]
+    return sorted_list[int(n * alpha)], sorted_der[int(n * alpha)]
 
 
 def calc_der_cvar(n, m, x, alpha):
     sample_list, derivative_list = collect_samples(n, m, x)
 
-    var_alpha = np.sort(sample_list)[int(np.ceil(n * alpha))]
+    var_alpha = np.sort(sample_list)[int(n * alpha)]
 
     cvar_list = []
     cvar_der_list = []
@@ -186,7 +185,7 @@ def linear_budget_empirical(iter_count, run, x_0=x0, linear_coef=linear_coef0, e
 
 
 if __name__ == "__main__":
-    theta_c = int(input("enter theta_c: "))
+    theta_c = float(input("enter theta_c: "))
     N = int(input("enter input size N: "))
     budget = int(input("enter number of iterations: "))
     runs = int(input("enter number of runs: "))
@@ -195,31 +194,31 @@ if __name__ == "__main__":
         "theta_hat": [],
         "data": [],
         "var_0.5": [],
-        "var_0.6": [],
+        # "var_0.6": [],
         "var_0.7": [],
-        "var_0.8": [],
+        # "var_0.8": [],
         "var_0.9": [],
         "cvar_0.5": [],
-        "cvar_0.6": [],
+        # "cvar_0.6": [],
         "cvar_0.7": [],
-        "cvar_0.8": [],
+        # "cvar_0.8": [],
         "cvar_0.9": [],
         "empirical": []
         }
     for i in range(1, runs+1):
-        post_a, post_b, theta_hat, data = calculate_posterior(theta_c, N, i)
+        post_a, post_b, theta_hat, data = calculate_posterior(theta_c, N)
         output["post_a_b"].append((post_a, post_b))
         output["theta_hat"].append(theta_hat)
         output["data"].append(data)
         output["var_0.5"].append(linear_budget_var(budget, 0.5, i))
-        output["var_0.6"].append(linear_budget_var(budget, 0.6, i))
+        # output["var_0.6"].append(linear_budget_var(budget, 0.6, i))
         output["var_0.7"].append(linear_budget_var(budget, 0.7, i))
-        output["var_0.8"].append(linear_budget_var(budget, 0.8, i))
+        # output["var_0.8"].append(linear_budget_var(budget, 0.8, i))
         output["var_0.9"].append(linear_budget_var(budget, 0.9, i))
         output["cvar_0.5"].append(linear_budget_cvar(budget, 0.5, i))
-        output["cvar_0.6"].append(linear_budget_cvar(budget, 0.6, i))
+        # output["cvar_0.6"].append(linear_budget_cvar(budget, 0.6, i))
         output["cvar_0.7"].append(linear_budget_cvar(budget, 0.7, i))
-        output["cvar_0.8"].append(linear_budget_cvar(budget, 0.8, i))
+        # output["cvar_0.8"].append(linear_budget_cvar(budget, 0.8, i))
         output["cvar_0.9"].append(linear_budget_cvar(budget, 0.9, i))
         output["empirical"].append(linear_budget_empirical(budget, i))
         np.save("output/combined_" + prob_str + "_N_" + str(N) + "_output.npy", output)

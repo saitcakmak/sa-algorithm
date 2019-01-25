@@ -101,7 +101,7 @@ def linear_budget(iter_count, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0
 
 
 if __name__ == "__main__":
-    theta_c = int(input("enter theta_c: "))
+    theta_c = float(input("enter theta_c: "))
     N = int(input("enter input size N: "))
     post_a, post_b = calculate_posterior(theta_c, N)
     budget = int(input("enter number of iterations: "))

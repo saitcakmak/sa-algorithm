@@ -1,14 +1,14 @@
 import datetime
 from multiprocessing import Pool as ThreadPool
 from sa_params import *
-from mm1_toy import mm1
+from prod_inv import prod
 
 
 start = datetime.datetime.now()
 
 string = input("enter output string: ")
-prob = mm1
-prob_str = "mm1_empirical_" + string
+prob = prod
+prob_str = "prod_empirical_" + string
 
 
 def collect_samples_empirical(m, x):
@@ -51,7 +51,7 @@ def linear_budget_empirical(iter_count, x_0=x0, linear_coef=linear_coef0, eps_nu
 
 
 if __name__ == "__main__":
-    theta_hat = int(input("enter theta_hat: "))
+    theta_hat = float(input("enter theta_hat: "))
     budget = int(input("enter number of iterations: "))
     linear_budget_empirical(budget)
 
