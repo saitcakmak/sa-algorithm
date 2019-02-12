@@ -76,3 +76,35 @@ def queue_with_theta_der(lam, mu, seed=0):
     derivative = -np.average(busy_period) / lam ** 2
     return cost, derivative
 
+
+def mm1_for_lr(lam, mu, a=a, M=M, seed=0):
+    if seed:
+        np.random.seed(seed)
+    arrival_seed = np.random.random(M)
+    service_seed = np.random.random(M)
+    arrival_log = np.log(arrival_seed)
+    service_log = np.log(service_seed)
+    inter_arr = (-1/lam) * arrival_log
+    service = (-1/mu) * service_log
+
+    arrival = []
+    departure = []
+    busy_period = []
+
+    arrival.append(inter_arr[0])
+    departure.append(arrival[0] + service[0])
+    busy = service_log[0]
+    busy_period.append(busy)
+    for i in range(1, M):
+        arrival.append(arrival[i-1] + inter_arr[i])
+        if arrival[i] < departure[i-1]:
+            busy += service_log[i]
+        else:
+            busy = service_log[i]
+        departure.append(max(arrival[i], departure[i-1]) + service[i])
+        busy_period.append(busy)
+
+    system_time = np.asarray(departure) - np.asarray(arrival)
+    cost = np.average(system_time) + mu ** 2 * a
+    derivative = np.average(busy_period) / mu ** 2 + a * 2 * mu
+    return cost, derivative, inter_arr, lam

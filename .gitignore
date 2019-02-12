@@ -3,7 +3,7 @@ temp_out.npy
 old_notation_code/
 old_notation_runs/
 output/old/
-
+output/matlab/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

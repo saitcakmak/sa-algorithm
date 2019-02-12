@@ -4,17 +4,34 @@ import datetime
 from prod_inv import prod
 
 
-# a = np.load("output/quad_combined_quad_small_N_10_runs_10_output.npy").item()
-# b = np.load("output/quad_combined_quad_small2_N_10_runs_90_output.npy").item()
-# c = np.load("output/quad_combined_quad_small3_N_10_runs_100_output.npy").item()
-# d = np.load("output/quad_combined_quad_small4_N_10_runs_100_output.npy").item()
-#
+# a1 = np.load("output/quad_combined_quad_s1_N_10_runs_100_output.npy").item()
+# a2 = np.load("output/quad_combined_quad_s2_N_10_runs_100_output.npy").item()
+# a3 = np.load("output/quad_combined_quad_s3_N_10_runs_100_output.npy").item()
+# a4 = np.load("output/quad_combined_quad_s4_N_10_runs_100_output.npy").item()
+# a5 = np.load("output/quad_combined_quad_s5_N_10_runs_100_output.npy").item()
+# a6 = np.load("output/quad_combined_quad_s6_N_10_runs_100_output.npy").item()
+# a7 = np.load("output/quad_combined_quad_s7_N_10_runs_100_output.npy").item()
+# a8 = np.load("output/quad_combined_quad_small_N_10_runs_300_output.npy").item()
+# a9 = np.load("output/quad_combined_quad_ss9_N_20_runs_63_output.npy").item()
+# a10 = np.load("output/quad_combined_quad_ss10_N_20_runs_63_output.npy").item()
+# a11 = np.load("output/quad_combined_quad_ss11_N_20_runs_63_output.npy").item()
+# a12 = np.load("output/quad_combined_quad_ss12_N_20_runs_63_output.npy").item()
+# a13 = np.load("output/quad_combined_quad_ss13_N_20_runs_63_output.npy").item()
+# a14 = np.load("output/quad_combined_quad_ss14_N_20_runs_63_output.npy").item()
+# a15 = np.load("output/quad_combined_quad_ss15_N_20_runs_63_output.npy").item()
+# a16 = np.load("output/quad_combined_quad_ss16_N_20_runs_63_output.npy").item()
+# a17 = np.load("output/quad_combined_quad_mm17_N_100_runs_50_output.npy").item()
+# a18 = np.load("output/quad_combined_quad_mm18_N_100_runs_50_output.npy").item()
+# a19 = np.load("output/quad_combined_quad_mm19_N_100_runs_50_output.npy").item()
+# a20 = np.load("output/quad_combined_quad_mm20_N_100_runs_50_output.npy").item()
+
 # e = {}
 #
-# for key in a.keys():
-#     e[key] = a[key] + b[key] + c[key] + d[key]
+# for key in a1.keys():
+#     e[key] = a1[key] + a2[key] + a3[key] + a4[key] + a5[key] + a6[key] + a7[key] + a8[key]  # + a9[key] + a10[key]
+#     # e[key] = e[key] + a11[key] + a12[key] + a13[key] + a14[key] + a15[key] + a16[key]  # + a17[key] + a18[key] + a19[key] + a20[key]
 #
-# np.save("output/quad_combined_quad_small_N_10_runs_300_output.npy", e)
+# np.save("output/quad_combined_quad_small_N_10_runs_1000_output.npy", e)
 
 # def quad(m, theta, x):
 #     xi = (-1/theta) * np.log(np.random.random(m))

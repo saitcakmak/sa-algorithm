@@ -2,6 +2,7 @@ import datetime
 from multiprocessing import Pool as ThreadPool
 from sa_params import *
 from mm1_toy import mm1
+import numpy as np
 
 
 start = datetime.datetime.now()
@@ -95,7 +96,7 @@ def calc_der_cvar(n, m, x, alpha):
     return np.average(cvar_list), np.average(cvar_der_list, 0)
 
 
-def linear_budget_var(iter_count, alpha, run, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
+def linear_budget_var(iter_count, alpha, run=0, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
     """
     start with x_0 and follow the algorithm from there
     use the iterative algorithm and map the evolution of the objective function value
@@ -123,14 +124,14 @@ def linear_budget_var(iter_count, alpha, run, x_0=x0, linear_coef=linear_coef0, 
         der_list.append(der)
         now = datetime.datetime.now()
         print("run = " + str(run) + " var_ " + str(alpha) + " t = ", t, " x = ", x_list[t], " val = ", val, " der = ", der, " time: ", now-begin)
-        # if (t+1) % 100 == 0:
-        #     np.save("output/" + prob_str + "_run_" + str(run) + "_VaR_" + str(alpha) + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_x", x_list)
+        if (t+1) % 100 == 0:
+            np.save("output/" + prob_str + "_run_" + str(run) + "_VaR_" + str(alpha) + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_x", x_list)
         #     np.save("output/" + prob_str + "_run_" + str(run) + "_VaR_" + str(alpha) + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_val", val_list)
         #     np.save("output/" + prob_str + "_run_" + str(run) + "_VaR_" + str(alpha) + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_der", der_list)
     return x_list, val_list, der_list
 
 
-def linear_budget_cvar(iter_count, alpha, run, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
+def linear_budget_cvar(iter_count, alpha, run=0, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
     """
     start with x0 and follow the algorithm from there
     use the iterative algorithm and map the evolution of the objective function value
@@ -150,14 +151,14 @@ def linear_budget_cvar(iter_count, alpha, run, x_0=x0, linear_coef=linear_coef0,
         der_list.append(der)
         now = datetime.datetime.now()
         print("run = " + str(run) + " cvar_" + str(alpha) + " t = ", t, " x = ", x_list[t], " val = ", val, " der = ", der, " time: ", now-begin)
-        # if (t+1) % 100 == 0:
-        #     np.save("output/" + prob_str + "_run_" + str(run) + "_CVaR_" + str(alpha) + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_x", x_list)
+        if (t+1) % 100 == 0:
+            np.save("output/" + prob_str + "_run_" + str(run) + "_CVaR_" + str(alpha) + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_x", x_list)
         #     np.save("output/" + prob_str + "_run_" + str(run) + "_CVaR_" + str(alpha) + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_val", val_list)
         #     np.save("output/" + prob_str + "_run_" + str(run) + "_CVaR_" + str(alpha) + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_der", der_list)
     return x_list, val_list, der_list
 
 
-def linear_budget_empirical(iter_count, run, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
+def linear_budget_empirical(iter_count, run=0, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
     """
     start with x_0 and follow the algorithm from there
     use the iterative algorithm and map the evolution of the objective function value
@@ -184,7 +185,8 @@ def linear_budget_empirical(iter_count, run, x_0=x0, linear_coef=linear_coef0, e
     return x_list, val_list, der_list
 
 
-if __name__ == "__main__":
+def big_run():
+    global post_a, post_b, theta_hat, data, theta_c, N
     theta_c = float(input("enter theta_c: "))
     N = int(input("enter input size N: "))
     budget = int(input("enter number of iterations: "))
@@ -205,23 +207,33 @@ if __name__ == "__main__":
         "cvar_0.9": [],
         "empirical": []
         }
-    for i in range(1, runs+1):
+    for run in range(1, runs+1):
         post_a, post_b, theta_hat, data = calculate_posterior(theta_c, N)
         output["post_a_b"].append((post_a, post_b))
         output["theta_hat"].append(theta_hat)
         output["data"].append(data)
-        output["var_0.5"].append(linear_budget_var(budget, 0.5, i))
-        # output["var_0.6"].append(linear_budget_var(budget, 0.6, i))
-        output["var_0.7"].append(linear_budget_var(budget, 0.7, i))
-        # output["var_0.8"].append(linear_budget_var(budget, 0.8, i))
-        output["var_0.9"].append(linear_budget_var(budget, 0.9, i))
-        output["cvar_0.5"].append(linear_budget_cvar(budget, 0.5, i))
-        # output["cvar_0.6"].append(linear_budget_cvar(budget, 0.6, i))
-        output["cvar_0.7"].append(linear_budget_cvar(budget, 0.7, i))
-        # output["cvar_0.8"].append(linear_budget_cvar(budget, 0.8, i))
-        output["cvar_0.9"].append(linear_budget_cvar(budget, 0.9, i))
-        output["empirical"].append(linear_budget_empirical(budget, i))
+        output["var_0.5"].append(linear_budget_var(budget, 0.5, run))
+        # output["var_0.6"].append(linear_budget_var(budget, 0.6, run))
+        output["var_0.7"].append(linear_budget_var(budget, 0.7, run))
+        # output["var_0.8"].append(linear_budget_var(budget, 0.8, run))
+        output["var_0.9"].append(linear_budget_var(budget, 0.9, run))
+        output["cvar_0.5"].append(linear_budget_cvar(budget, 0.5, run))
+        # output["cvar_0.6"].append(linear_budget_cvar(budget, 0.6, run))
+        output["cvar_0.7"].append(linear_budget_cvar(budget, 0.7, run))
+        # output["cvar_0.8"].append(linear_budget_cvar(budget, 0.8, run))
+        output["cvar_0.9"].append(linear_budget_cvar(budget, 0.9, run))
+        output["empirical"].append(linear_budget_empirical(budget, run))
         np.save("output/combined_" + prob_str + "_N_" + str(N) + "_output.npy", output)
+
+
+if __name__ == "__main__":
+    N = 50
+    theta_c = 10
+    post_a, post_b, theta_hat, data = calculate_posterior(theta_c, N)
+    # print(collect_samples(20, 5, 10))
+    linear_budget_var(500, 0.9)
+    linear_budget_cvar(500, 0.9)
+
 
 end = datetime.datetime.now()
 print("time: ", end-start)

@@ -5,38 +5,56 @@ from mm1_toy import mm1
 start = datetime.datetime.now()
 
 
-def val_check(x):
-    out = []
-    for i in range(10000):
-        val, der = mm1(10, x)
-        out.append(val)
-    return np.average(out)
+# def val_check(x):
+#     out = []
+#     for i in range(m):
+#         val, der = mm1(10, x)
+#         out.append(val)
+#     return np.average(out)
+
+#
+# def quad_check(x):
+#     return (x - 1) ** 2 + 1
+#
+#
+# inp = np.load("output/quad_combined_quad_small_N_10_runs_1000_output.npy").item()
+# keys = list(inp.keys())[3:]
+#
+#
+# out = {}
+# for key in keys:
+#     out[key] = np.zeros(1000)
+#     for i in range(1000):
+#         out[key][i] = quad_check(inp[key][i])
+# print("time: ", datetime.datetime.now()-start)
+#
+# np.save("output/quad_values_small_N_10_runs_1000.npy", out)
 
 
-tiny = np.load("output/combined_mm1_tiny_fix_N_10_output.npy").item()
+# tiny = np.load("output/combined_mm1_tiny_fix_N_10_output.npy").item()
 # small = np.load("output/combined_mm1_small_fixed_N_20_output.npy").item()
 # med = np.load("output/combined_mm1_med_N_100_output.npy").item()
 # large = np.load("output/combined_mm1_large_fixed_N_1000_output.npy").item()
 
-keys = list(tiny.keys())[3:]
+# keys = list(tiny.keys())[3:]
 
 
-tiny_out = {}
-# tiny_stats = {}
-
-for key in keys:
-    tiny_out[key] = []
-    for i in range(30):
-        last_30 = tiny[key][i][0][-30:]
-        out = np.average(last_30)
-        tiny_out[key].append(val_check(out))
-    print("tiny key: ", key, " time ", datetime.datetime.now()-start)
-    # tiny_out[key] = np.sort(small_out[key], axis=0)
-    # min = tiny_out[key][0]
-    # max = tiny_out[key][-1]
-    # avg = np.average(tiny_out[key])
-    # std = np.std(tiny_out[key])
-    # tiny_stats[key] = (min, max, avg, std)
+# tiny_out = {}
+# # tiny_stats = {}
+#
+# for key in keys:
+#     tiny_out[key] = []
+#     for i in range(30):
+#         last_30 = tiny[key][i][0][-30:]
+#         out = np.average(last_30)
+#         tiny_out[key].append(val_check(out))
+#     print("tiny key: ", key, " time ", datetime.datetime.now()-start)
+#     # tiny_out[key] = np.sort(small_out[key], axis=0)
+#     # min = tiny_out[key][0]
+#     # max = tiny_out[key][-1]
+#     # avg = np.average(tiny_out[key])
+#     # std = np.std(tiny_out[key])
+#     # tiny_stats[key] = (min, max, avg, std)
 
 
 # small_out = {}
@@ -103,10 +121,10 @@ for key in keys:
 # for key in keys:
 #     print(key, " ", large_stats[key])
 
-
-print("tiny")
-for key in keys:
-    print(key, " ", tiny_out[key])
+#
+# print("tiny")
+# for key in keys:
+#     print(key, " ", tiny_out[key])
 
 # print("small")
 # for key in keys:
