@@ -57,7 +57,7 @@ def sequential_sampler(theta_list, n, m, p, x):
     return vals, ders, budget_used
 
 
-def main(n=0, m=0, p=10):
+def main(n=0, m=0, p=10, post_a=100, post_b=100):
     global data
     data = dict()
     if not n * m:
@@ -66,7 +66,7 @@ def main(n=0, m=0, p=10):
         p = int(input("p: "))
     x = 1  # float(input("x: "))
     start = datetime.datetime.now()
-    theta_list = np.random.gamma(100, 1 / 100, n)
+    theta_list = np.random.gamma(post_a, 1 / post_b, n)
     for theta in theta_list:
         data[theta] = [[], []]
     vals, ders, budget_used = sequential_sampler(theta_list, n, m, p, x)
@@ -77,6 +77,7 @@ def main(n=0, m=0, p=10):
     budget = budget_used
     lr_budget = 0
     return vals[int(n * 0.9)], ders[int(n * 0.9)], budget, lr_budget
+
 
 if __name__ == "__main__":
     main(100, 100)

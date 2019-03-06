@@ -7,13 +7,13 @@ import datetime
 from multiprocessing import Pool
 
 
-def main(n, m, k, rep):
+def main(n, m, k, rep, post_a=100, post_b=100):
     start = datetime.datetime.now()
 
     results = dict()
     arg_list = []
     for i in range(rep):
-        arg_list.append((n, m, k))
+        arg_list.append((n, m, k, post_a, post_b))
     pool = Pool()
     results['lr'] = pool.starmap(green_lr_estimator.main, arg_list)
     results['naive'] = pool.starmap(naive_quad.main, arg_list)

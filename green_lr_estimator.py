@@ -39,7 +39,7 @@ def calculate_lr(theta_list, n):
     return vals, ders
 
 
-def main(n=0, m=0, k=0):
+def main(n=0, m=0, k=0, post_a=100, post_b=100):
     global data
     data = dict()
     if not n * m:
@@ -47,7 +47,7 @@ def main(n=0, m=0, k=0):
         m = int(input("m: "))
     x = 1  # float(input("x: "))
     start = datetime.datetime.now()
-    theta_list = np.random.gamma(100, 1 / 100, n)
+    theta_list = np.random.gamma(post_a, 1 / post_b, n)
     collect_samples(theta_list, m, x)
     vals, ders = calculate_lr(theta_list, n)
     # print("avg_val: ", np.average(vals), " avg_der: ", np.average(ders))

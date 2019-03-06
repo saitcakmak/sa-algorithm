@@ -10,10 +10,10 @@ def quad(m, theta, x):
     return val, der
 
 
-def collect_samples(n, m, x):
+def collect_samples(n, m, x, post_a, post_b):
     sample_list = np.zeros(n)
     derivative_list = np.zeros(n)
-    theta = np.random.gamma(100, 1 / 100, n)
+    theta = np.random.gamma(post_a, 1 / post_b, n)
     for i in range(n):
         val, der = quad(m, theta[i], x)
         sample_list[i] = val
@@ -21,13 +21,13 @@ def collect_samples(n, m, x):
     return np.array(sample_list), np.array(derivative_list)
 
 
-def main(n=0, m=0, k=0):
+def main(n=0, m=0, k=0, post_a=100, post_b=100):
     if not n * m:
         n = int(input("n: "))
         m = int(input("m: "))
     x = 1  # float(input("x: "))
     start = datetime.datetime.now()
-    vals, ders = collect_samples(n, m, x)
+    vals, ders = collect_samples(n, m, x, post_a, post_b)
     # print("avg_val: ", np.average(vals), " avg_der: ", np.average(ders))
     ind = np.argsort(vals)
     vals = vals[ind]
