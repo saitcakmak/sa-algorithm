@@ -2,6 +2,7 @@ import datetime
 from multiprocessing import Pool as ThreadPool
 from sa_params import *
 from prod_inv import prod
+import numpy as np
 
 
 start = datetime.datetime.now()

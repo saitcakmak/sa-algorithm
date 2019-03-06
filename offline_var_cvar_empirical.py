@@ -84,16 +84,11 @@ def calc_der_var(n, m, x, alpha):
 def calc_der_cvar(n, m, x, alpha):
     sample_list, derivative_list = collect_samples(n, m, x)
 
-    var_alpha = np.sort(sample_list)[int(n * alpha)]
+    sort_index = np.argsort(sample_list)
+    sorted_list = sample_list[sort_index]
+    sorted_der = derivative_list[sort_index]
 
-    cvar_list = []
-    cvar_der_list = []
-    for i in range(n):
-        if sample_list[i] >= var_alpha:
-            cvar_list.append(sample_list[i])
-            cvar_der_list.append(derivative_list[i])
-
-    return np.average(cvar_list), np.average(cvar_der_list, 0)
+    return np.average(sorted_list[int(n * alpha):]), np.average(sorted_der[int(n * alpha):], 0)
 
 
 def linear_budget_var(iter_count, alpha, run=0, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
@@ -229,10 +224,13 @@ def big_run():
 if __name__ == "__main__":
     N = 50
     theta_c = 10
-    post_a, post_b, theta_hat, data = calculate_posterior(theta_c, N)
+    # post_a, post_b, theta_hat, data = calculate_posterior(theta_c, N)
+    post_a = 100
+    post_b = 10
+    theta_hat = theta_c
     # print(collect_samples(20, 5, 10))
-    linear_budget_var(500, 0.9)
-    linear_budget_cvar(500, 0.9)
+    linear_budget_var(100, 0.9)
+    # linear_budget_cvar(500, 0.9)
 
 
 end = datetime.datetime.now()

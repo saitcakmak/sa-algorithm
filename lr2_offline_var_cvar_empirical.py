@@ -1,5 +1,6 @@
 """
 this code uses likelihood ratio to reduce computational budget
+LR sampler distribution is adaptively chosen based on previous theta
 """
 import datetime
 from multiprocessing import Pool as ThreadPool
@@ -13,7 +14,7 @@ start = datetime.datetime.now()
 string = input("enter output string: ")
 prob = mm1
 prob_lr = mm1_for_lr
-prob_str = "mm1_lr_" + string
+prob_str = "mm1_lr2_" + string
 delta = 0.000001
 
 
@@ -74,28 +75,18 @@ def lr_estimator(samples, theta):
         lr_list[i] = calc_likelihood(samples[i][2], samples[i][3], theta)
         val_sum = val_sum + samples[i][0] * lr_list[i]
         der_sum = der_sum + samples[i][1] * lr_list[i]
-    return val_sum, der_sum
+    return val_sum, der_sum, theta
 
 
 def collect_samples(n, m, x):
     """
     samples thetas
-    uses the first 10 to draw samples to be used as LR samples
+    uses the previous VaR theta to draw samples to be used as LR samples
     sends these samples along with theta list to get the estimates
     returns the list of value / derivative pairs
     """
-    arg_list = np.zeros((n, 3))
     theta_list = np.random.gamma(post_a, 1/post_b, n)
-    for i in range(10):
-        theta = theta_list[i]
-        arg_list[i] = (m, theta, x)
-    pool = ThreadPool()
-    results = pool.starmap(collect_inner_samples, arg_list.tolist())
-    pool.close()
-    pool.join()
-    samples = []
-    for res in results:
-        samples = samples + res
+    samples = collect_inner_samples(m, theta_lr, x)
     arg_list = []
     for theta in theta_list:
         arg_list.append((samples, theta))
@@ -105,28 +96,34 @@ def collect_samples(n, m, x):
     pool.join()
     val_list = np.zeros(n)
     der_list = np.zeros(n)
+    t_list = np.zeros(n)
     for i in range(n):
         val_list[i] = results[i][0]
         der_list[i] = results[i][1]
-    return val_list, der_list
+        t_list[i] = results[i][2]
+    return val_list, der_list, t_list
 
 
 def calc_der_var(n, m, x, alpha):
-    sample_list, derivative_list = collect_samples(n, m, x)
+    global theta_lr
+    sample_list, derivative_list, t_list = collect_samples(n, m, x)
 
     sort_index = np.argsort(sample_list)
     sorted_list = sample_list[sort_index]
     sorted_der = derivative_list[sort_index]
+    theta_lr = t_list[sort_index][int(n*alpha)]
 
     return sorted_list[int(n * alpha)], sorted_der[int(n * alpha)]
 
 
 def calc_der_cvar(n, m, x, alpha):
-    sample_list, derivative_list = collect_samples(n, m, x)
+    global theta_lr
+    sample_list, derivative_list, t_list = collect_samples(n, m, x)
 
     sort_index = np.argsort(sample_list)
     sorted_list = sample_list[sort_index]
     sorted_der = derivative_list[sort_index]
+    theta_lr = t_list[sort_index][int(n*alpha)]
 
     return np.average(sorted_list[int(n * alpha):]), np.average(sorted_der[int(n * alpha):], 0)
 
@@ -268,9 +265,10 @@ if __name__ == "__main__":
     post_a = 100
     post_b = 10
     theta_hat = theta_c
+    theta_lr = theta_hat
     # print(collect_samples(20, 5, 10))
     linear_budget_var(100, 0.9)
-    # linear_budget_cvar(500, 0.9)
+    # linear_budget_cvar(100, 0.9)
 
 end = datetime.datetime.now()
 print("time: ", end-start)
