@@ -1,6 +1,6 @@
 import datetime
 import numpy as np
-from sa_params import *
+from code_v1.sa_params import *
 
 
 start = datetime.datetime.now()

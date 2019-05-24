@@ -1,7 +1,7 @@
 import datetime
 from multiprocessing import Pool as ThreadPool
-from sa_params import *
-from prod_inv import prod
+from code_v1.sa_params import *
+from code_v1.prod_inv import prod
 import numpy as np
 
 

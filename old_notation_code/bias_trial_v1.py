@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import datetime
-from mm1_toy import queue
+from code_v1.mm1_toy import queue
 
 
 start = datetime.datetime.now()

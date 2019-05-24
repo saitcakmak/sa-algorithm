@@ -1,14 +1,17 @@
 import datetime
 from multiprocessing import Pool as ThreadPool
-from sa_params import *
-from mm1_toy import mm1
+from code_v1.sa_params import *
+from code_v1.mm1_toy import mm1
 
 
 start = datetime.datetime.now()
 
 string = input("enter output string: ")
 prob = mm1
-prob_str = "mm1_" + string
+prob_str = "mm1_online_" + string
+data = []
+post_a = 2
+post_b = 0
 
 
 def calculate_posterior(theta_c, N):
@@ -17,15 +20,15 @@ def calculate_posterior(theta_c, N):
     prior is assumed gamma(2,0)
     the true distribution is exponential with theta_c
     M is the input data size
+    this is done incrementally here. Each M adds to the previous data
     """
-    global prob_str
+    global prob_str, data, post_a, post_b
     seed = np.random.random(N)
     log = np.log(seed)
-    data = (-1 / theta_c) * log
-    np.save("output/" + "data_" + prob_str + "_theta_" + str(theta_c) + "_N_" + str(N) + ".npy", data)
-    a = 2 + N
-    b = np.sum(data)
-    return a, b
+    data = np.concatenate((data, (-1 / theta_c) * log))
+    np.save("output/" + "data_" + prob_str + "_theta_" + str(theta_c) + "_N_list_" + str(N_list) + ".npy", data)
+    post_a = post_a + N
+    post_b = np.sum(data)
 
 
 def collect_inner_samples(m, theta, x):
@@ -70,7 +73,7 @@ def calc_der(n, m, x):
             cvar_list.append(sample_list[i])
             cvar_der_list.append(derivative_list[i])
 
-    return np.average(cvar_list, 0), np.average(cvar_der_list, 0)
+    return np.average(cvar_list), np.average(cvar_der_list, 0)
 
 
 def linear_budget(iter_count, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0, eps_denom=eps_denom0, n_m_ratio=n_m_ratio0):
@@ -83,28 +86,35 @@ def linear_budget(iter_count, x_0=x0, linear_coef=linear_coef0, eps_num=eps_num0
     val_list = []
     der_list = []
     x_list = [x_0]
-    for t in range(iter_count):
-        eps = eps_num / (eps_denom + t) ** eps_power
-        n = n0 + int(linear_coef * t)
-        val, der = calc_der(n, int(n * n_m_ratio), x_list[t])
-        x_next = max(np.array(x_list[t]) - eps * np.array(der), x_low)  # make sure x is not out of bounds
-        x_list.append(x_next)
-        val_list.append(val)
-        der_list.append(der)
-        now = datetime.datetime.now()
-        print("t = ", t, " x = ", x_list[t], " val = ", val, " der = ", der, " time: ", now-begin)
-        if (t+1) % 100 == 0:
-            np.save("output/" + prob_str + "_CVaR" + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_x", x_list)
-            np.save("output/" + prob_str + "_CVaR" + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_val", val_list)
-            np.save("output/" + prob_str + "_CVaR" + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_der", der_list)
+    for N in N_list:
+        calculate_posterior(theta_c, N)
+        for t in range(iter_count):
+            eps = eps_num / (eps_denom + t) ** eps_power
+            n = n0 + int(linear_coef * t)
+            val, der = calc_der(n, int(n * n_m_ratio), x_list[-1])
+            x_next = max(np.array(x_list[-1]) - eps * np.array(der), x_low)  # make sure x is not out of bounds
+            x_list.append(x_next)
+            val_list.append(val)
+            der_list.append(der)
+            now = datetime.datetime.now()
+            print("t = ", t, " x = ", x_list[-1], " val = ", val, " der = ", der, " time: ", now-begin)
+            if (t+1) % 100 == 0:
+                np.save("output/" + prob_str + "_CVaR" + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_x", x_list)
+                np.save("output/" + prob_str + "_CVaR" + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_val", val_list)
+                np.save("output/" + prob_str + "_CVaR" + "_linear" + str(linear_coef) + "_n-m" + str(n_m_ratio) + "_t0=" + str(x_0) + "_eps" + str(eps_num) + "-" + str(eps_denom) + "_" + str(eps_power) + "_der", der_list)
     return x_list, val_list, der_list
 
 
 if __name__ == "__main__":
     theta_c = float(input("enter theta_c: "))
-    N = int(input("enter input size N: "))
-    post_a, post_b = calculate_posterior(theta_c, N)
-    budget = int(input("enter number of iterations: "))
+    alpha = float(input("enter alpha: "))
+    N_list = []
+    while True:
+        N = int(input("enter the sequence of input sizes - non-cumulative - 0 for exit: "))
+        if N == 0:
+            break
+        N_list.append(N)
+    budget = int(input("enter number of iterations for each input size: "))
     linear_budget(budget)
 
 end = datetime.datetime.now()

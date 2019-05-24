@@ -1,7 +1,13 @@
-import numpy as np
-import matplotlib.pyplot as plt
-import datetime
-from prod_inv import prod
+# count = 1000000
+# res = np.zeros(count)
+# for i in range(count):
+#     x = np.random.randint(0, 20, 100)
+#     h = np.zeros(20)
+#     for j in range(20):
+#         h[j] = np.sum(x == j)
+#     res[i] = np.sum(h >= 5)
+#
+# print(np.average(res))
 
 
 # a1 = np.load("output/quad_combined_quad_s1_N_10_runs_100_output.npy").item()

@@ -1,7 +1,10 @@
+"""
+this code uses likelihood ratio to reduce computational budget
+"""
 import datetime
 from multiprocessing import Pool as ThreadPool
-from sa_params import *
-from mm1_toy import mm1
+from code_v1.sa_params import *
+from code_v1.mm1_toy import mm1, mm1_for_lr
 import numpy as np
 
 
@@ -9,11 +12,12 @@ start = datetime.datetime.now()
 
 string = input("enter output string: ")
 prob = mm1
-prob_str = "mm1_" + string
+prob_lr = mm1_for_lr
+prob_str = "mm1_lr_" + string
+delta = 0.000001
 
 
 def collect_samples_empirical(m, x):
-    global prob, theta_hat
     m = int(m)
     np.random.seed()
     inner_list = np.zeros(m)
@@ -25,7 +29,7 @@ def collect_samples_empirical(m, x):
     return np.average(inner_list), np.average(inner_derivative_list, 0)
 
 
-def calculate_posterior(theta_c, N):
+def calculate_posterior(th_c, N):
     """
     return the posterior parameters
     prior is assumed gamma(2,0)
@@ -34,41 +38,77 @@ def calculate_posterior(theta_c, N):
     """
     seed = np.random.random(N)
     log = np.log(seed)
-    data = (-1 / theta_c) * log
+    dat = (-1 / th_c) * log
     a = 2 + N
-    b = np.sum(data)
-    theta_hat = 1 / np.average(data)
-    return a, b, theta_hat, data
+    b = np.sum(dat)
+    theta_h = 1 / np.average(dat)
+    return a, b, theta_h, dat
 
 
 def collect_inner_samples(m, theta, x):
+    """
+    collect samples for a given theta for use in likelihood sampling
+    """
     m = int(m)
     np.random.seed()
-    inner_list = np.zeros(m)
-    inner_derivative_list = np.zeros(m)
+    out = []
     for j in range(m):
-        val, der = prob(theta, x)
-        inner_list[j] = val
-        inner_derivative_list[j] = der
-    return np.average(inner_list), np.average(inner_derivative_list, 0)
+        out.append(prob_lr(theta, x))
+    return out
+
+
+def calc_likelihood(vals, theta_org, theta_alt):
+    """
+    returns the likelihood ratio of given theta's for the given data
+    """
+    likelihood = np.prod((np.exp(- theta_alt * (vals - delta)) - np.exp(- theta_alt * vals))
+                         / (np.exp(- theta_org * (vals - delta)) - np.exp(- theta_org * vals)))
+    return likelihood
+
+
+def lr_estimator(samples, theta):
+    lr_list = np.zeros(len(samples))
+    val_sum = 0
+    der_sum = 0
+    for i in range(len(samples)):
+        lr_list[i] = calc_likelihood(samples[i][2], samples[i][3], theta)
+        val_sum = val_sum + samples[i][0] * lr_list[i]
+        der_sum = der_sum + samples[i][1] * lr_list[i]
+    return val_sum / np.sum(lr_list), der_sum / np.sum(lr_list)
 
 
 def collect_samples(n, m, x):
-    global post_a, post_b
-    sample_list = np.zeros(n)
-    derivative_list = np.zeros(n)
+    """
+    samples thetas
+    uses the first 10 to draw samples to be used as LR samples
+    sends these samples along with theta list to get the estimates
+    returns the list of value / derivative pairs
+    """
     arg_list = np.zeros((n, 3))
-    for i in range(n):
-        theta = np.random.gamma(post_a, 1/post_b)
+    theta_list = np.random.gamma(post_a, 1/post_b, n)
+    for i in range(10):
+        theta = theta_list[i]
         arg_list[i] = (m, theta, x)
     pool = ThreadPool()
     results = pool.starmap(collect_inner_samples, arg_list.tolist())
     pool.close()
     pool.join()
+    samples = []
+    for res in results:
+        samples = samples + res
+    arg_list = []
+    for theta in theta_list:
+        arg_list.append((samples, theta))
+    pool = ThreadPool()
+    results = pool.starmap(lr_estimator, arg_list)
+    pool.close()
+    pool.join()
+    val_list = np.zeros(n)
+    der_list = np.zeros(n)
     for i in range(n):
-        sample_list[i] = results[i][0]
-        derivative_list[i] = results[i][1]
-    return np.array(sample_list), np.array(derivative_list)
+        val_list[i] = results[i][0]
+        der_list[i] = results[i][1]
+    return val_list, der_list
 
 
 def calc_der_var(n, m, x, alpha):
@@ -231,7 +271,6 @@ if __name__ == "__main__":
     # print(collect_samples(20, 5, 10))
     linear_budget_var(100, 0.9)
     # linear_budget_cvar(500, 0.9)
-
 
 end = datetime.datetime.now()
 print("time: ", end-start)

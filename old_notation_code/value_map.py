@@ -1,9 +1,7 @@
 import numpy as np
 import datetime
 from multiprocessing import Pool as ThreadPool
-from mm1_toy import queue
-from simple_quadv2 import quadv2
-from prod_inv import prod
+from code_v1.prod_inv import prod
 
 prob = prod
 prob_str = "prod"

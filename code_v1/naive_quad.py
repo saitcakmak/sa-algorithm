@@ -41,4 +41,4 @@ def main(n=0, m=0, k=0, post_a=100, post_b=100):
 
 
 if __name__ == "__main__":
-    main(100, 100)
+    print(main(100000, 100000, 40, 100, 100))

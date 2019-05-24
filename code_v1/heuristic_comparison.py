@@ -1,8 +1,5 @@
 import numpy as np
-import naive_quad
-import green_lr_estimator
-import sequential_estimator
-import sequential_lr_estimator
+from code_v1 import sequential_estimator, green_lr_estimator, naive_quad, sequential_lr_estimator
 import datetime
 from multiprocessing import Pool
 

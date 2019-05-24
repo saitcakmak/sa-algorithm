@@ -1,6 +1,4 @@
-import numpy as np
 import datetime
-from mm1_toy import mm1
 
 start = datetime.datetime.now()
 

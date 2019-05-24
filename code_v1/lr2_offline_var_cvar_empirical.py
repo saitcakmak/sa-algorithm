@@ -4,8 +4,8 @@ LR sampler distribution is adaptively chosen based on previous theta
 """
 import datetime
 from multiprocessing import Pool as ThreadPool
-from sa_params import *
-from mm1_toy import mm1, mm1_for_lr
+from code_v1.sa_params import *
+from code_v1.mm1_toy import mm1, mm1_for_lr
 import numpy as np
 
 
@@ -75,7 +75,7 @@ def lr_estimator(samples, theta):
         lr_list[i] = calc_likelihood(samples[i][2], samples[i][3], theta)
         val_sum = val_sum + samples[i][0] * lr_list[i]
         der_sum = der_sum + samples[i][1] * lr_list[i]
-    return val_sum, der_sum, theta
+    return val_sum / np.sum(lr_list), der_sum / np.sum(lr_list), theta
 
 
 def collect_samples(n, m, x):

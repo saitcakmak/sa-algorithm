@@ -1,5 +1,5 @@
 import datetime
-from multiprocessing import Pool as ThreadPool
+from multiprocessing import Pool
 import numpy as np
 
 
@@ -21,22 +21,23 @@ def collect_samples(theta_list, m, x):
 
 
 def calculate_lr(theta_list, n):
-    # TODO: This could be parallelized
     vals = np.zeros(n)
     ders = np.zeros(n)
+    lr_sum = 0
     for i in range(n):
         theta = theta_list[i]
         weighted_val = []
         weighted_der = []
         for entry in data.values():
             lr = theta * np.exp(- theta * entry[2]) / entry[3]
+            lr_sum += lr
             val = entry[0] * lr
             der = entry[1] * lr
             weighted_val = weighted_val + val.tolist()
             weighted_der = weighted_der + der.tolist()
         vals[i] = np.average(weighted_val)
         ders[i] = np.average(weighted_der)
-    return vals, ders
+    return vals / lr_sum, ders / lr_sum
 
 
 def main(n=0, m=0, k=0, post_a=100, post_b=100):
