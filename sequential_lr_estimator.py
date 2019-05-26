@@ -90,6 +90,8 @@ def estimator(theta_list, x, m, alpha, rho):
         means[i] = np.average(inner_samples[0])
         ders[i] = np.average(inner_samples[1])
 
+    # TODO: once LR is completed, update this part accordingly.
+
     sort_index = np.argsort(means)
     means = means[sort_index]
     ders = ders[sort_index]

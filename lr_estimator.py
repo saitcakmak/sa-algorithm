@@ -3,6 +3,8 @@ import problem_sampler
 import lr_calculator
 import scipy.stats as sci
 
+conf = 0.95
+
 
 def estimator(theta_list, x, m, alpha, rho):
     n = len(theta_list)
@@ -21,7 +23,6 @@ def estimator(theta_list, x, m, alpha, rho):
     theta_list = np.array(theta_list)[sort_index]
     mean_est = mean_est[sort_index]
     std_est = std_est[sort_index]
-    var = theta_list[int(n * alpha)]
     var_mean = mean_est[int(n * alpha)]
     var_std = std_est[int(n * alpha)]
 
@@ -35,7 +36,7 @@ def estimator(theta_list, x, m, alpha, rho):
             theta_std = std_est[i]
             std = np.sqrt(theta_std ** 2 / m + var_std ** 2 / m)
             df = std ** 2 / ( (theta_std ** 2 / m) ** 2 + (var_std ** 2 / m) ** 2 ) * (m-1)
-            if diff < std * sci.t.ppf(0.95, df):
+            if diff < std * sci.t.ppf(conf, df):
                 updated_list.append(theta)
             elif mean_est[i] < var_mean:
                 spare += 1
@@ -50,10 +51,10 @@ def estimator(theta_list, x, m, alpha, rho):
                 theta_std = std_est[i]
                 std = np.sqrt(theta_std ** 2 / m + var_std ** 2 / m)
                 df = std ** 2 / ( (theta_std ** 2 / m) ** 2 + (var_std ** 2 / m) ** 2 ) * (m-1)
-                if diff < std * sci.t.ppf(0.95, df):
+                if diff < std * sci.t.ppf(conf, df):
                     updated_list.append(theta)
                 else:
-                    updated_list.append(theta)
+                    spare += 1
 
     updated_est = np.zeros(len(updated_list))
     update_der = np.zeros(len(updated_list))
@@ -61,7 +62,6 @@ def estimator(theta_list, x, m, alpha, rho):
     # TODO: this should follow along with lr_calculator. Otherwise, it will be too costly
 
     sort_index = np.argsort(updated_est)
-    updated_list = np.array(updated_list)[sort_index]
     updated_est = updated_est[sort_index]
     update_der = update_der[sort_index]
 

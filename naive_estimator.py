@@ -18,4 +18,4 @@ def estimator(theta_list, x, m, alpha, rho):
     if rho == "VaR":
         return samples[int(n * alpha)], ders[int(n * alpha)]
     elif rho == "CVaR":
-        return np.average(samples[int(n * alpha): n]), np.average(ders[int(n * alpha): n])
+        return np.average(samples[int(n * alpha):]), np.average(ders[int(n * alpha):])
