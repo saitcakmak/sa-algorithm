@@ -47,7 +47,7 @@ def simple_run(estimator, budget, rep, alpha, rho):
             results[i] = estimator(theta, x, budget, alpha, rho)
     else:
         return 0
-    np.savetxt("run_save_"+rho+"_"+estimator_text+"_budget_"+str(budget)+"_rep_"+str(rep)+"_time_"+str(datetime.datetime.now())+".csv",
+    np.savetxt(rho+"_"+estimator_text+"_budget_"+str(budget)+"_rep_"+str(rep)+"_time_"+str(datetime.datetime.now())+".csv",
                X=results, delimiter=";")
 
     return results
