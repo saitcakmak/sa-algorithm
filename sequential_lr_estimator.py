@@ -67,6 +67,8 @@ def estimator(theta_list, x, m, alpha, rho):
                 theta = updated_list[i]
                 if means[i] > var_mean:
                     next_list.append(theta)
+                    old_means.append(means[i])
+                    old_std.append(std[i])
                 else:
                     diff = abs(var_mean - means[i])
                     theta_std = std[i]
