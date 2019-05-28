@@ -60,6 +60,6 @@ if __name__ == "__main__":
     # rep = int(input("replications: "))
     rep = 50
     # alpha = float(input("alpha: "))
-    alpha = 0.99
+    alpha = 0.8
     rho = input("rho (VaR or CVaR): ")
     simple_run(estimator, budget, rep, alpha, rho)
