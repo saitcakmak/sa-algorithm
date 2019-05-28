@@ -47,7 +47,7 @@ def simple_run(estimator, budget, rep, alpha, rho):
             results[i] = estimator(theta, x, budget, alpha, rho)
     else:
         return 0
-    np.savetxt("run_save_"+estimator_text+"_budget_"+str(budget)+"_rep_"+str(rep)+"_time_"+str(datetime.datetime.now())+".csv",
+    np.savetxt("run_save_"+rho+"_"+estimator_text+"_budget_"+str(budget)+"_rep_"+str(rep)+"_time_"+str(datetime.datetime.now())+".csv",
                X=results, delimiter=";")
 
     return results
@@ -56,9 +56,9 @@ def simple_run(estimator, budget, rep, alpha, rho):
 if __name__ == "__main__":
     estimator = input("choose the estimator (naive, lr, seq, seq_lr): ")
     # budget = int(input("choose budget: "))
-    budget = 1000
+    budget = 100
     # rep = int(input("replications: "))
-    rep = 5
+    rep = 50
     # alpha = float(input("alpha: "))
     alpha = 0.99
     rho = input("rho (VaR or CVaR): ")
