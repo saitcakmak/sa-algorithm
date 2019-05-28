@@ -55,8 +55,8 @@ def simple_run(estimator, budget, rep, alpha, rho):
 
 if __name__ == "__main__":
     estimator = input("choose the estimator (naive, lr, seq, seq_lr): ")
-    budget = input("choose budget: ")
-    rep = input("replications: ")
-    alpha = input("alpha: ")
+    budget = int(input("choose budget: "))
+    rep = int(input("replications: "))
+    alpha = float(input("alpha: "))
     rho = input("rho (VaR or CVaR): ")
     simple_run(estimator, budget, rep, alpha, rho)
