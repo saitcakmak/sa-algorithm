@@ -39,8 +39,8 @@ def estimator(theta_list, x, m, alpha, rho):
         std = std[sort_index]
         updated_list = updated_list[sort_index]
 
-        var_mean = means[int(len(updated_list) * alpha) - spare]
-        var_std = std[int(len(updated_list) * alpha) - spare]
+        var_mean = means[int(n * alpha) - spare]
+        var_std = std[int(n * alpha) - spare]
 
         next_list = []
         old_means = []
