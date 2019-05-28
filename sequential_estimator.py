@@ -5,6 +5,7 @@ import scipy.stats as sci
 # Confidence for the t-test used and sequence of budget percentages
 conf = 0.95
 seq = np.array([0.12, 0.16, 0.22])
+sampler = problem_sampler.simple_sampler
 
 
 def estimator(theta_list, x, m, alpha, rho):
@@ -26,7 +27,7 @@ def estimator(theta_list, x, m, alpha, rho):
         std = np.zeros(len(updated_list))
         # Draw new samples for the survivors
         for i in range(len(updated_list)):
-            inner_samples = problem_sampler.sampler(updated_list[i], x, m)
+            inner_samples = sampler(updated_list[i], x, m)
             means[i] = (np.sum(inner_samples[0]) + old_means[i] * m_used) / (m + m_used)
             std[i] = np.sqrt((np.std(inner_samples[0]) ** 2 * m + old_std[i] ** 2 * m_used) / (m + m_used))
 
@@ -49,9 +50,9 @@ def estimator(theta_list, x, m, alpha, rho):
                 theta = updated_list[i]
                 diff = abs(var_mean - means[i])
                 theta_std = std[i]
-                std = np.sqrt(theta_std ** 2 / m + var_std ** 2 / m)
-                df = std ** 2 / ((theta_std ** 2 / m) ** 2 + (var_std ** 2 / m) ** 2) * (m - 1)
-                if diff < std * sci.t.ppf(conf, df):
+                t_std = np.sqrt(theta_std ** 2 / m + var_std ** 2 / m)
+                df = t_std ** 2 / ((theta_std ** 2 / m) ** 2 + (var_std ** 2 / m) ** 2) * (m - 1)
+                if diff < t_std * sci.t.ppf(conf, df):
                     next_list.append(theta)
                     old_means.append(means[i])
                     old_std.append(std[i])
@@ -66,9 +67,9 @@ def estimator(theta_list, x, m, alpha, rho):
                 else:
                     diff = abs(var_mean - means[i])
                     theta_std = std[i]
-                    std = np.sqrt(theta_std ** 2 / m + var_std ** 2 / m)
-                    df = std ** 2 / ((theta_std ** 2 / m) ** 2 + (var_std ** 2 / m) ** 2) * (m - 1)
-                    if diff < std * sci.t.ppf(conf, df):
+                    t_std = np.sqrt(theta_std ** 2 / m + var_std ** 2 / m)
+                    df = t_std ** 2 / ((theta_std ** 2 / m) ** 2 + (var_std ** 2 / m) ** 2) * (m - 1)
+                    if diff < t_std * sci.t.ppf(conf, df):
                         next_list.append(theta)
                         old_means.append(means[i])
                         old_std.append(std[i])
@@ -86,7 +87,7 @@ def estimator(theta_list, x, m, alpha, rho):
 
     # New samples with the remaining budget and estimation
     for i in range(len(updated_list)):
-        inner_samples = problem_sampler.sampler(updated_list[i], x, m)
+        inner_samples = sampler(updated_list[i], x, m)
         means[i] = np.average(inner_samples[0])
         ders[i] = np.average(inner_samples[1])
 

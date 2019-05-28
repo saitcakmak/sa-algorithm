@@ -1,13 +1,15 @@
 import numpy as np
 import problem_sampler
 
+sampler = problem_sampler.simple_sampler
+
 
 def estimator(theta_list, x, m, alpha, rho):
     n = len(theta_list)
     samples = np.zeros(n)
     ders = np.zeros(n)
     for i in range(n):
-        inner_samples = problem_sampler.sampler(theta_list[i], x, m)
+        inner_samples = sampler(theta_list[i], x, m)
         samples[i] = np.average(inner_samples[0])
         ders[i] = np.average(inner_samples[1])
 
