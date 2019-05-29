@@ -4,11 +4,13 @@ import lr_estimator
 import sequential_estimator
 import sequential_lr_estimator
 import datetime
+from multiprocessing import Pool
 
 x = 2
 
 
-def simple_run(estimator, budget, rep, alpha, rho):
+def simple_run(estimator, budget, rep, alpha, rho, count):
+    np.random.seed()
     estimator_text = estimator
     if estimator == "naive":
         estimator = naive_estimator.estimator
@@ -25,41 +27,72 @@ def simple_run(estimator, budget, rep, alpha, rho):
 
     if rho == "VaR":
         results = np.zeros((rep, 2))
+        m = int(budget ** (1/3))
+        n = m
+        k = m
         for i in range(rep):
             inner_reps = np.zeros((budget, 2))
-            for k in range(budget):
-                print("budget ", budget, " rep ", i, rho, " count ", k, " time ",
+            for j in range(k):
+                print(rho, str(alpha), estimator_text, "budget ", budget, " rep ", i, rho, " count ", j, " time ",
                       datetime.datetime.now()-start)
-                theta_0 = np.random.normal(0, 1, budget)
-                theta_1 = np.random.normal(0, 1, budget)
+                theta_0 = np.random.normal(0, 1, n)
+                theta_1 = np.random.normal(0, 1, n)
                 theta = np.transpose([theta_0, theta_1])
-                inner_reps[k] = estimator(theta, x, budget, alpha, rho)
+                inner_reps[j] = estimator(theta, x, m, alpha, rho)
             results[i] = np.average(inner_reps, 0)
 
     elif rho == "CVaR":
         results = np.zeros((rep, 2))
+        m = int(budget ** (1/2))
+        n = m
         for i in range(rep):
-            print("budget ", budget, " rep ", i, rho, " time ",
+            print(rho, str(alpha), estimator_text, "budget ", budget, " rep ", i, rho, " time ",
                   datetime.datetime.now() - start)
-            theta_0 = np.random.normal(0, 1, budget)
-            theta_1 = np.random.normal(0, 1, budget)
+            theta_0 = np.random.normal(0, 1, n)
+            theta_1 = np.random.normal(0, 1, n)
             theta = np.transpose([theta_0, theta_1])
-            results[i] = estimator(theta, x, budget, alpha, rho)
+            results[i] = estimator(theta, x, m, alpha, rho)
     else:
         return 0
-    np.savetxt(rho+"_"+estimator_text+"_budget_"+str(budget)+"_rep_"+str(rep)+"_time_"+str(datetime.datetime.now())+".csv",
+    np.savetxt("simple_output/"+rho+"_"+str(alpha)+"_"+estimator_text+"_budget_"+str(budget)+"_rep_"
+               +str(rep)+"_time_"+str(datetime.datetime.now())+str(count)+".csv",
                X=results, delimiter=";")
 
     return results
 
 
 if __name__ == "__main__":
-    estimator = input("choose the estimator (naive, lr, seq, seq_lr): ")
+    estimator_list = ['naive', 'lr', 'seq', 'seq_lr']
+    rho_list = ['VaR', 'CVaR']
+    budget_list = [1000, 10000, 100000, 1000000, 10000000]
+    total_rep = 100
+    rep_list = total_rep * np.array([1, 1, 1, 0.5, 0.1])
+    repeater = [1, 1, 1, 2, 10]
+    alpha_list = [0.5, 0.8, 0.99]
+
+    count = 0
+    arg_list = []
+    for est in estimator_list:
+        for rh in rho_list:
+            for alp in alpha_list:
+                for i in range(5):
+                    for j in range(repeater[i]):
+                        count += 1
+                        arg_list.append((est, budget_list[i], int(rep_list[i]), alp, rh, count))
+
+    print(arg_list)
+    print(count)
+    pool = Pool(36)
+    pool_results = pool.starmap(simple_run, arg_list)
+    pool.close()
+    pool.join()
+
+    # estimator = input("choose the estimator (naive, lr, seq, seq_lr): ")
     # budget = int(input("choose budget: "))
-    budget = 100
+    # budget = 100
     # rep = int(input("replications: "))
-    rep = 50
+    # rep = 50
     # alpha = float(input("alpha: "))
-    alpha = 0.8
-    rho = input("rho (VaR or CVaR): ")
-    simple_run(estimator, budget, rep, alpha, rho)
+    # alpha = 0.8
+    # rho = input("rho (VaR or CVaR): ")
+    # simple_run(estimator, budget, rep, alpha, rho)
