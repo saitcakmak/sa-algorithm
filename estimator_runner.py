@@ -72,17 +72,22 @@ if __name__ == "__main__":
 
     count = 0
     arg_list = []
-    for est in estimator_list:
-        for rh in rho_list:
-            for alp in alpha_list:
-                for i in range(5):
-                    for j in range(repeater[i]):
-                        count += 1
-                        arg_list.append((est, budget_list[i], int(rep_list[i]), alp, rh, count))
+
+    # for est in estimator_list:
+    #     for rh in rho_list:
+    #         for alp in alpha_list:
+    #             for i in range(5):
+    #                 for j in range(repeater[i]):
+    #                     count += 1
+    #                     arg_list.append((est, budget_list[i], int(rep_list[i]), alp, rh, count))
+
+    for i in range(10):
+        count += 1
+        arg_list.append(("seq_lr", 10000000, 3, 0.8, "CVaR", count))
 
     print(arg_list)
     print(count)
-    pool = Pool(36)
+    pool = Pool(count)
     pool_results = pool.starmap(simple_run, arg_list)
     pool.close()
     pool.join()
