@@ -91,6 +91,12 @@ if __name__ == "__main__":
                 count += 1
                 arg_list.append((est, bud, 100, alp, "VaR", count))
 
+    for bud in [10000, 1000]:
+        for est in ["seq", "seq_lr"]:
+            for alp in alpha_list:
+                count += 1
+                arg_list.append((est, bud, 100, alp, "CVaR", count))
+
 
     print(arg_list)
     print(count)

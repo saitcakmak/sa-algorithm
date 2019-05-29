@@ -55,7 +55,7 @@ def estimator(theta_list, x, m, alpha, rho):
                 theta_std = std[i]
                 t_std = np.sqrt(theta_std ** 2 / m + var_std ** 2 / m)
                 df = t_std ** 2 / ((theta_std ** 2 / m) ** 2 + (var_std ** 2 / m) ** 2) * (m - 1)
-                if diff < t_std * sci.t.ppf(conf, df):
+                if diff < t_std * sci.t.ppf(conf, df) or t_std == 0:
                     next_list.append(theta)
                     old_means.append(means[i])
                     old_std.append(std[i])
@@ -74,7 +74,7 @@ def estimator(theta_list, x, m, alpha, rho):
                     theta_std = std[i]
                     t_std = np.sqrt(theta_std ** 2 / m + var_std ** 2 / m)
                     df = t_std ** 2 / ((theta_std ** 2 / m) ** 2 + (var_std ** 2 / m) ** 2) * (m - 1)
-                    if diff < t_std * sci.t.ppf(conf, df):
+                    if diff < t_std * sci.t.ppf(conf, df) or t_std == 0:
                         next_list.append(theta)
                         old_means.append(means[i])
                         old_std.append(std[i])
