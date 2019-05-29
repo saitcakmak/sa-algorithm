@@ -27,7 +27,7 @@ def simple_run(estimator, budget, rep, alpha, rho, count):
 
     if rho == "VaR":
         results = np.zeros((rep, 2))
-        m = int(budget ** (1/3))
+        m = int((budget+1) ** (1/3))
         n = m
         k = m
         for i in range(rep):
@@ -81,9 +81,16 @@ if __name__ == "__main__":
     #                     count += 1
     #                     arg_list.append((est, budget_list[i], int(rep_list[i]), alp, rh, count))
 
-    for i in range(10):
-        count += 1
-        arg_list.append(("seq_lr", 10000000, 3, 0.8, "CVaR", count))
+    # for i in range(10):
+    #     count += 1
+    #     arg_list.append(("seq_lr", 10000000, 3, 0.8, "CVaR", count))
+
+    for bud in [100000, 10000, 1000]:
+        for est in ["seq", "seq_lr"]:
+            for alp in alpha_list:
+                count += 1
+                arg_list.append((est, bud, 100, alp, "VaR", count))
+
 
     print(arg_list)
     print(count)
