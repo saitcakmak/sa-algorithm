@@ -31,7 +31,7 @@ def simple_run(estimator, budget, rep, alpha, rho, count):
         n = m
         k = m
         for i in range(rep):
-            inner_reps = np.zeros((budget, 2))
+            inner_reps = np.zeros((k, 2))
             for j in range(k):
                 print(rho, str(alpha), estimator_text, "budget ", budget, " rep ", i, rho, " count ", j, " time ",
                       datetime.datetime.now()-start)
@@ -62,44 +62,44 @@ def simple_run(estimator, budget, rep, alpha, rho, count):
 
 
 if __name__ == "__main__":
-    estimator_list = ['naive', 'lr', 'seq', 'seq_lr']
+    estimator_list = ['lr', 'seq_lr']
     rho_list = ['VaR', 'CVaR']
-    budget_list = [1000, 10000, 100000, 1000000, 10000000]
+    budget_list = [1000, 10000, 100000, 1000000]
     total_rep = 100
-    rep_list = total_rep * np.array([1, 1, 1, 0.5, 0.1])
-    repeater = [1, 1, 1, 2, 10]
+    rep_list = total_rep * np.array([1, 1, 1, 0.25])
+    repeater = [1, 1, 1, 4]
     alpha_list = [0.5, 0.8, 0.99]
 
     count = 0
     arg_list = []
 
-    # for est in estimator_list:
-    #     for rh in rho_list:
-    #         for alp in alpha_list:
-    #             for i in range(5):
-    #                 for j in range(repeater[i]):
-    #                     count += 1
-    #                     arg_list.append((est, budget_list[i], int(rep_list[i]), alp, rh, count))
+    for est in estimator_list:
+        for rh in rho_list:
+            for alp in alpha_list:
+                for i in range(4):
+                    for j in range(repeater[i]):
+                        count += 1
+                        arg_list.append((est, budget_list[i], int(rep_list[i]), alp, rh, count))
 
     # for i in range(10):
     #     count += 1
     #     arg_list.append(("seq_lr", 10000000, 3, 0.8, "CVaR", count))
-
-    for bud in [1000]:
-        for est in estimator_list:
-            for alp in alpha_list:
-                count += 1
-                arg_list.append((est, bud, 100, alp, "VaR", count))
-
-    for bud in [1000000]:
-        for est in estimator_list:
-            for alp in alpha_list:
-                count += 1
-                arg_list.append((est, bud, 33, alp, "VaR", count))
-                count += 1
-                arg_list.append((est, bud, 33, alp, "VaR", count))
-                count += 1
-                arg_list.append((est, bud, 34, alp, "VaR", count))
+    #
+    # for bud in [1000]:
+    #     for est in estimator_list:
+    #         for alp in alpha_list:
+    #             count += 1
+    #             arg_list.append((est, bud, 100, alp, "VaR", count))
+    #
+    # for bud in [1000000]:
+    #     for est in estimator_list:
+    #         for alp in alpha_list:
+    #             count += 1
+    #             arg_list.append((est, bud, 33, alp, "VaR", count))
+    #             count += 1
+    #             arg_list.append((est, bud, 33, alp, "VaR", count))
+    #             count += 1
+    #             arg_list.append((est, bud, 34, alp, "VaR", count))
 
     # for bud in [10000, 1000]:
     #     for est in ["seq", "seq_lr"]:

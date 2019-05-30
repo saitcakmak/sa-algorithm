@@ -9,6 +9,7 @@ This code estimates the c prime for the simple example
 
 
 def est(alpha, c):
+    # Don't use, this is wrong.
     vals = np.zeros(c)
     interval = (1 - alpha) / c
     for i in range(c):
@@ -30,6 +31,7 @@ def parallel_inner(t_start, interval, rep):
 
 
 def est_parallel(alpha, c):
+    # Don't use!
     interval = (1 - alpha) / c
     larger_interval = (1 - alpha) / 100
     arg_list = []
@@ -45,10 +47,30 @@ def est_parallel(alpha, c):
     return estimate
 
 
+def mc_try(alpha, c):
+    x = 2
+    theta_1 = np.random.normal(0, 1, c)
+    theta_2 = np.random.normal(0, 1, c)
+    if alpha == 0.5:
+        v_alpha = 0
+    elif alpha == 0.8:
+        v_alpha = 1.88192229
+    elif alpha == 0.99:
+        v_alpha = 5.201871986
+    else:
+        return -1
+    val = x * theta_1 + theta_2
+    indicator = val > v_alpha
+    der_values = theta_1 * indicator
+    estimator = (1 / (1 - alpha)) * np.average(der_values)
+    return estimator
+
+
 if __name__ == "__main__":
     start = datetime.datetime.now()
-    print("0.5: ", est_parallel(0.5, 100000000))
-    print("0.8: ", est_parallel(0.8, 100000000))
-    print("0.99: ", est_parallel(0.99, 100000000))
+    # print("0.5: ", est_parallel(0.5, 100000000))
+    # print("0.8: ", est_parallel(0.8, 100000000))
+    # print("0.99: ", est_parallel(0.99, 100000000))
+    print("0.5: ", mc_try(0.5, 100000000))
     end = datetime.datetime.now()
     print(end-start)

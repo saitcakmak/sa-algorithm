@@ -6,7 +6,7 @@ import scipy.stats as sci
 # Confidence of the t-test
 conf = 0.95
 sampler = problem_sampler.simple_sampler_lr
-lr_calc = lr_calculator.simple_lr
+lr_calc = lr_calculator.simple_lr_v2
 
 
 def estimator(theta_list, x, m, alpha, rho):
