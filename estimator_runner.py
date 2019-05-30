@@ -85,18 +85,27 @@ if __name__ == "__main__":
     #     count += 1
     #     arg_list.append(("seq_lr", 10000000, 3, 0.8, "CVaR", count))
 
-    for bud in [100000, 10000, 1000]:
-        for est in ["seq", "seq_lr"]:
+    for bud in [1000]:
+        for est in estimator_list:
             for alp in alpha_list:
                 count += 1
                 arg_list.append((est, bud, 100, alp, "VaR", count))
 
-    for bud in [10000, 1000]:
-        for est in ["seq", "seq_lr"]:
+    for bud in [1000000]:
+        for est in estimator_list:
             for alp in alpha_list:
                 count += 1
-                arg_list.append((est, bud, 100, alp, "CVaR", count))
+                arg_list.append((est, bud, 33, alp, "VaR", count))
+                count += 1
+                arg_list.append((est, bud, 33, alp, "VaR", count))
+                count += 1
+                arg_list.append((est, bud, 34, alp, "VaR", count))
 
+    # for bud in [10000, 1000]:
+    #     for est in ["seq", "seq_lr"]:
+    #         for alp in alpha_list:
+    #             count += 1
+    #             arg_list.append((est, bud, 100, alp, "CVaR", count))
 
     print(arg_list)
     print(count)
