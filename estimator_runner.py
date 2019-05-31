@@ -14,12 +14,12 @@ def simple_run(estimator, budget, rep, alpha, rho, count):
     estimator_text = estimator
     if estimator == "naive":
         estimator = naive_estimator.estimator
-    elif estimator == "lr":
-        estimator = lr_estimator.estimator
+    elif estimator == "lr2":
+        estimator = lr_estimator.estimator_v2
     elif estimator == "seq":
         estimator = sequential_estimator.estimator
     elif estimator == "seq_lr":
-        estimator = sequential_lr_estimator.estimator
+        estimator = sequential_lr_estimator.estimator_v2
     else:
         return 0
 
