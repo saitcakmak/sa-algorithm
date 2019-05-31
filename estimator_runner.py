@@ -14,7 +14,7 @@ def simple_run(estimator, budget, rep, alpha, rho, count):
     estimator_text = estimator
     if estimator == "naive":
         estimator = naive_estimator.estimator
-    elif estimator == "lr2":
+    elif estimator == "lr":
         estimator = lr_estimator.estimator_v2
     elif estimator == "seq":
         estimator = sequential_estimator.estimator
@@ -62,12 +62,12 @@ def simple_run(estimator, budget, rep, alpha, rho, count):
 
 
 if __name__ == "__main__":
-    estimator_list = ['lr', 'seq_lr']
+    estimator_list = ['lr']
     rho_list = ['VaR', 'CVaR']
     budget_list = [1000, 10000, 100000, 1000000]
     total_rep = 100
-    rep_list = total_rep * np.array([1, 1, 1, 0.25])
-    repeater = [1, 1, 1, 4]
+    rep_list = total_rep * np.array([1, 1, 1, 0.2])
+    repeater = [1, 1, 1, 5]
     alpha_list = [0.5, 0.8, 0.99]
 
     count = 0
