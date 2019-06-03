@@ -10,7 +10,7 @@ x = 10
 n = 400
 m = 40
 alpha = 0.6
-rep = 2
+rep = 100
 t_c_list = np.load("mcmc_out/out_c_try.npy")
 t_p_list = np.load("mcmc_out/out_p_try.npy")
 
