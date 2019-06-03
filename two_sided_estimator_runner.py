@@ -63,8 +63,8 @@ def run(estimator, rho, count):
 
 
 if __name__ == "__main__":
-    estimator_list = ['naive', 'lr', 'seq', 'seq_lr']
-    rho_list = ['VaR', 'CVaR']
+    estimator_list = ['lr', 'seq_lr']
+    rho_list = ['CVaR']
 
     count = 0
     arg_list = []
