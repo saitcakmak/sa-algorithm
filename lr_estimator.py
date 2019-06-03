@@ -5,18 +5,26 @@ import scipy.stats as sci
 
 # Confidence of the t-test
 conf = 0.95
-sampler = problem_sampler.simple_sampler_lr
-lr_calc = lr_calculator.simple_lr
 
 
-def estimator(theta_list, x, m, alpha, rho):
+def estimator(theta_list, x, m, alpha, rho, prob):
+    if prob == "simple":
+        sampler = problem_sampler.simple_sampler_lr
+        lr_calc = lr_calculator.simple_lr
+        dim = 2
+    elif prob == "two_sided":
+        sampler = problem_sampler.two_sided_sampler_lr
+        lr_calc = lr_calculator.two_sided_lr
+        dim = 200
+    else:
+        return -1
     n = len(theta_list)
     mean_est = np.zeros(n)
     std_est = np.zeros(n)
     vals = np.zeros((n, m))
     ders = np.zeros((n, m))
-    rvs = np.zeros((n, m, problem_sampler.dim))
-    likelihoods = np.zeros((n, m, problem_sampler.dim))
+    rvs = np.zeros((n, m, dim))
+    likelihoods = np.zeros((n, m, dim))
 
     # Draw samples and keep track of the data and estimated means & std dev
     for i in range(n):
@@ -56,7 +64,7 @@ def estimator(theta_list, x, m, alpha, rho):
             theta_std = std_est[i]
             std = np.sqrt(theta_std ** 2 / m + var_std ** 2 / m)
             df = std ** 2 / ( (theta_std ** 2 / m) ** 2 + (var_std ** 2 / m) ** 2 ) * (m-1)
-            if diff < std * sci.t.ppf(conf, df):
+            if diff < std * sci.t.ppf(conf, df) or std == 0:
                 updated_list.append(theta_list[i])
                 updated_vals.append(vals[i])
                 updated_ders.append(ders[i])
@@ -78,7 +86,7 @@ def estimator(theta_list, x, m, alpha, rho):
                 theta_std = std_est[i]
                 std = np.sqrt(theta_std ** 2 / m + var_std ** 2 / m)
                 df = std ** 2 / ( (theta_std ** 2 / m) ** 2 + (var_std ** 2 / m) ** 2 ) * (m-1)
-                if diff < std * sci.t.ppf(conf, df):
+                if diff < std * sci.t.ppf(conf, df) or std == 0:
                     updated_list.append(theta_list[i])
                     updated_vals.append(vals[i])
                     updated_ders.append(ders[i])
@@ -96,7 +104,7 @@ def estimator(theta_list, x, m, alpha, rho):
         lr_ders = np.zeros((len(updated_list), m))
         lr_weights = np.zeros((len(updated_list), m))
         for j in range(len(updated_list)):
-            weights = lr_calc(updated_list[i], updated_rvs[j], updated_likelihoods[j])
+            weights = lr_calc(updated_list[i], updated_rvs[j], updated_likelihoods[j], x)
             lr_vals[j] = updated_vals[j] * weights
             lr_ders[j] = updated_ders[j] * weights
             lr_weights[j] = weights

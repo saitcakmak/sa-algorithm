@@ -10,6 +10,7 @@ x = 2
 
 
 def simple_run(estimator, budget, rep, alpha, rho, count):
+    prob = "simple"
     np.random.seed()
     estimator_text = estimator
     if estimator == "naive":
@@ -38,7 +39,7 @@ def simple_run(estimator, budget, rep, alpha, rho, count):
                 theta_0 = np.random.normal(0, 1, n)
                 theta_1 = np.random.normal(0, 1, n)
                 theta = np.transpose([theta_0, theta_1])
-                inner_reps[j] = estimator(theta, x, m, alpha, rho)
+                inner_reps[j] = estimator(theta, x, m, alpha, rho, prob)
             results[i] = np.average(inner_reps, 0)
 
     elif rho == "CVaR":
@@ -51,7 +52,7 @@ def simple_run(estimator, budget, rep, alpha, rho, count):
             theta_0 = np.random.normal(0, 1, n)
             theta_1 = np.random.normal(0, 1, n)
             theta = np.transpose([theta_0, theta_1])
-            results[i] = estimator(theta, x, m, alpha, rho)
+            results[i] = estimator(theta, x, m, alpha, rho, prob)
     else:
         return 0
     np.savetxt("simple_output/"+rho+"_"+str(alpha)+"_"+estimator_text+"_budget_"+str(budget)+"_rep_"
@@ -73,13 +74,15 @@ if __name__ == "__main__":
     count = 0
     arg_list = []
 
-    for est in estimator_list:
-        for rh in rho_list:
-            for alp in alpha_list:
-                for i in range(4):
-                    for j in range(repeater[i]):
-                        count += 1
-                        arg_list.append((est, budget_list[i], int(rep_list[i]), alp, rh, count))
+    print(simple_run("seq", 100000, 1, 0.8, "CVaR", count))
+
+    # for est in estimator_list:
+    #     for rh in rho_list:
+    #         for alp in alpha_list:
+    #             for i in range(4):
+    #                 for j in range(repeater[i]):
+    #                     count += 1
+    #                     arg_list.append((est, budget_list[i], int(rep_list[i]), alp, rh, count))
 
     # for i in range(10):
     #     count += 1
@@ -107,12 +110,12 @@ if __name__ == "__main__":
     #             count += 1
     #             arg_list.append((est, bud, 100, alp, "CVaR", count))
 
-    print(arg_list)
-    print(count)
-    pool = Pool(count)
-    pool_results = pool.starmap(simple_run, arg_list)
-    pool.close()
-    pool.join()
+    # print(arg_list)
+    # print(count)
+    # pool = Pool(count)
+    # pool_results = pool.starmap(simple_run, arg_list)
+    # pool.close()
+    # pool.join()
 
     # estimator = input("choose the estimator (naive, lr, seq, seq_lr): ")
     # budget = int(input("choose budget: "))

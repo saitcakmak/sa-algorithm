@@ -6,12 +6,21 @@ import lr_calculator
 # Confidence for the t-test used and sequence of budget percentages
 conf = 0.95
 seq = np.array([0.12, 0.16, 0.22])
-sampler = problem_sampler.simple_sampler
-sampler_lr = problem_sampler.simple_sampler_lr
-lr_calc = lr_calculator.simple_lr
 
 
-def estimator(theta_list, x, m, alpha, rho):
+def estimator(theta_list, x, m, alpha, rho, prob):
+    if prob == "simple":
+        sampler = problem_sampler.simple_sampler
+        sampler_lr = problem_sampler.simple_sampler_lr
+        lr_calc = lr_calculator.simple_lr
+        dim = 2
+    elif prob == "two_sided":
+        sampler = problem_sampler.two_sided_sampler
+        sampler_lr = problem_sampler.two_sided_sampler_lr
+        lr_calc = lr_calculator.two_sided_lr
+        dim = 200
+    else:
+        return -1
     n = len(theta_list)
     total_budget = n * m
     budget_used = 0
@@ -88,8 +97,8 @@ def estimator(theta_list, x, m, alpha, rho):
     m = int(remaining_budget / len(updated_list))
     vals = np.zeros((len(updated_list), m))
     ders = np.zeros((len(updated_list), m))
-    rvs = np.zeros((len(updated_list), m, problem_sampler.dim))
-    likelihoods = np.zeros((len(updated_list), m, problem_sampler.dim))
+    rvs = np.zeros((len(updated_list), m, dim))
+    likelihoods = np.zeros((len(updated_list), m, dim))
 
     # New samples with the remaining budget and estimation
     for i in range(len(updated_list)):
@@ -108,7 +117,7 @@ def estimator(theta_list, x, m, alpha, rho):
         lr_ders = np.zeros((len(updated_list), m))
         lr_weights = np.zeros((len(updated_list), m))
         for j in range(len(updated_list)):
-            weights = lr_calc(updated_list[i], rvs[j], likelihoods[j])
+            weights = lr_calc(updated_list[i], rvs[j], likelihoods[j], x)
             lr_vals[j] = vals[j] * weights
             lr_ders[j] = ders[j] * weights
             lr_weights[j] = weights

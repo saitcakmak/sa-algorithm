@@ -1,10 +1,14 @@
 import numpy as np
 import problem_sampler
 
-sampler = problem_sampler.simple_sampler
 
-
-def estimator(theta_list, x, m, alpha, rho):
+def estimator(theta_list, x, m, alpha, rho, prob):
+    if prob == "simple":
+        sampler = problem_sampler.simple_sampler
+    elif prob == "two_sided":
+        sampler = problem_sampler.two_sided_sampler
+    else:
+        return -1
     n = len(theta_list)
     samples = np.zeros(n)
     ders = np.zeros(n)

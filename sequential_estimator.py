@@ -5,10 +5,15 @@ import scipy.stats as sci
 # Confidence for the t-test used and sequence of budget percentages
 conf = 0.95
 seq = np.array([0.12, 0.16, 0.22])
-sampler = problem_sampler.simple_sampler
 
 
-def estimator(theta_list, x, m, alpha, rho):
+def estimator(theta_list, x, m, alpha, rho, prob):
+    if prob == "simple":
+        sampler = problem_sampler.simple_sampler
+    elif prob == "two_sided":
+        sampler = problem_sampler.two_sided_sampler
+    else:
+        return -1
     n = len(theta_list)
     total_budget = n * m
     budget_used = 0

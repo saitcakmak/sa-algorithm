@@ -4,6 +4,10 @@ where d_i follows exponential with unknown rate
 """
 import numpy as np
 
+"""
+this code behaves weird!!
+"""
+
 c = 1
 h = 0.1
 b = 0.2

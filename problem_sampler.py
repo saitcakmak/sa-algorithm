@@ -1,7 +1,6 @@
 import numpy as np
 import scipy.stats as sci
-
-dim = 2  # This is the dimension of the rvs array
+import two_sided
 
 
 def simple_sampler(theta, x, m):
@@ -26,25 +25,26 @@ def simple_sampler_lr(theta, x, m):
     return samples, ders, rvs, likelihood
 
 
-def sampler_lr(theta, x, m):
-    """
-    This is not used now. Just a copy of old wrapper.
-    :param theta:
-    :param x:
-    :param m:
-    :return:
-    """
+def two_sided_sampler(theta, x, m):
+    samples = np.zeros(m)
+    ders = np.zeros(m)
+    for i in range(m):
+        run = two_sided.two_sided(theta, x)
+        samples[i] = run[0]
+        ders[i] = run[1]
+    return samples, ders
+
+
+def two_sided_sampler_lr(theta, x, m):
+    dim = 200
     samples = np.zeros(m)
     ders = np.zeros(m)
     rvs = np.zeros((m, dim))
     likelihood = np.zeros((m, dim))
-
-    for j in range(m):
-        sample = prob(theta, x)
-        samples[j] = sample[0]
-        ders[j] = sample[1]
-        rvs[j] = sample[2]
-        # TODO: for given rvs calculate the likelihood and append it here
-        likelihood[j] = sci.expon(sample[2], 1/theta) # this is just an example for exponential rv with rate theta
-
+    for i in range(m):
+        run = two_sided.two_sided_lr(theta, x)
+        samples[i] = run[0]
+        ders[i] = run[1]
+        rvs[i] = run[2]
+        likelihood[i] = run[3]
     return samples, ders, rvs, likelihood
