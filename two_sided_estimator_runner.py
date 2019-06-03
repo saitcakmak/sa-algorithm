@@ -10,7 +10,7 @@ x = 10
 n = 400
 m = 40
 alpha = 0.6
-rep = 100
+rep = 2
 t_c_list = np.load("mcmc_out/out_c_try.npy")
 t_p_list = np.load("mcmc_out/out_p_try.npy")
 
@@ -63,8 +63,8 @@ def run(estimator, rho, count):
 
 
 if __name__ == "__main__":
-    estimator_list = ['lr', 'seq_lr']
-    rho_list = ['CVaR']
+    estimator_list = ['naive', 'lr', 'seq', 'seq_lr']
+    rho_list = ['VaR', 'CVaR']
 
     count = 0
     arg_list = []
