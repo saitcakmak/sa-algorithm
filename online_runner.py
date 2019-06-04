@@ -56,3 +56,10 @@ def online_run(alpha, rho, out_string="", x0=5, n0=300, iter_count=1000):
             np.save("sa_out/online_" + rho + "_" + str(alpha) + "_" + out_string + "_iter_" + str(iter_count) + "_eps"
                     + str(eps_num) + "-" + str(eps_base) + "_der.npy", der_list)
     return x_list, val_list, der_list
+
+
+if __name__ == "__main__":
+    alp = float(input("alpha: " ))
+    rh = input("rho: ")
+    text = input("text: ")
+    online_run(alp, rh, text)

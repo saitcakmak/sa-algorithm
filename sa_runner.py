@@ -21,7 +21,7 @@ def estimate(x, n, alpha, rho):
     return var, der
 
 
-def sa_run(iter_count, alpha, rho, out_string="", x0=5, n0=100):
+def sa_run(alpha, rho, out_string="", x0=5, n0=100, iter_count=1000):
     begin = datetime.datetime.now()
     val_list = []
     der_list = []
@@ -45,3 +45,10 @@ def sa_run(iter_count, alpha, rho, out_string="", x0=5, n0=100):
             np.save("sa_out/" + rho + "_" + str(alpha) + "_" + out_string + "_iter_" + str(iter_count) + "_eps" + str(
                 eps_num) + "-" + str(eps_base) + "_der.npy", der_list)
     return x_list, val_list, der_list
+
+
+if __name__ == "__main__":
+    alp = float(input("alpha: " ))
+    rh = input("rho: ")
+    text = input("text: ")
+    sa_run(alp, rh, text)
