@@ -7,12 +7,12 @@ import datetime
 from multiprocessing import Pool
 
 x = 10
-rep = 100
 t_c_list = np.load("mcmc_out/out_c_try.npy")
 t_p_list = np.load("mcmc_out/out_p_try.npy")
+t_limit = datetime.timedelta(minutes=3.3)
 
 
-def run(estimator, rho, count, n=400, alpha=0.6):
+def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
     m = int(n/10)
     prob = "two_sided"
     np.random.seed()
@@ -42,7 +42,7 @@ def run(estimator, rho, count, n=400, alpha=0.6):
             t_list = np.transpose([t_c, t_p])
             results[i] = estimator(t_list, x, m, alpha, rho, prob)
             now_2 = datetime.datetime.now()
-            if (now_2 - now) > datetime.timedelta(minutes=8):
+            if (now_2 - now) > t_limit:
                 print("TIME EXCEEDED: ", rho, str(alpha), estimator_text, "n: ", n)
                 return 0
 
@@ -58,7 +58,7 @@ def run(estimator, rho, count, n=400, alpha=0.6):
             t_list = np.transpose([t_c, t_p])
             results[i] = estimator(t_list, x, m, alpha, rho, prob)
             now_2 = datetime.datetime.now()
-            if (now_2 - now) > datetime.timedelta(minutes=8):
+            if (now_2 - now) > t_limit:
                 print("TIME EXCEEDED: ", rho, str(alpha), estimator_text, "n: ", n)
                 return 0
 
@@ -76,6 +76,7 @@ if __name__ == "__main__":
     rho_list = ['VaR', 'CVaR']
     n_list = [100, 400, 1000, 4000, 10000, 40000, 100000]
     alpha = 0.7
+    rep_list = [25, 25, 25, 25]
 
     count = 0
     arg_list = []
@@ -83,12 +84,17 @@ if __name__ == "__main__":
     for n in n_list:
         for est in estimator_list:
             for rh in rho_list:
-                count += 1
-                arg_list.append((est, rh, count, n, alpha))
+                if n < 10000:
+                    count += 1
+                    arg_list.append((est, rh, count, n, alpha, int(sum(rep_list))))
+                else:
+                    for rep in rep_list:
+                        count += 1
+                        arg_list.append((est, rh, count, n, alpha, rep))
 
     print(arg_list)
     print(count)
-    pool = Pool(count)
+    pool = Pool(int(count/4))
     pool_results = pool.starmap(run, arg_list)
     pool.close()
     pool.join()
