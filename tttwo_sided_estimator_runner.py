@@ -9,7 +9,7 @@ from multiprocessing import Pool
 x = 10
 t_c_list = np.load("mcmc_out/out_c_try.npy")
 t_p_list = np.load("mcmc_out/out_p_try.npy")
-t_limit = datetime.timedelta(minutes=3.3)
+t_limit = datetime.timedelta(minutes=6.5)
 
 
 def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
@@ -64,9 +64,9 @@ def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
 
     else:
         return 0
-    np.savetxt("two_sided_estimators/"+rho+"_"+str(alpha)+"_"+estimator_text+"_n_"
-               +str(n)+"_time_"+str(datetime.datetime.now())+str(count)+".csv",
-               X=results, delimiter=";")
+    # np.savetxt("two_sided_estimators/"+rho+"_"+str(alpha)+"_"+estimator_text+"_n_"
+    #            +str(n)+"_time_"+str(datetime.datetime.now())+str(count)+".csv",
+    #            X=results, delimiter=";")
 
     return results
 
@@ -82,7 +82,32 @@ if __name__ == "__main__":
     rho = input("rho: ")
     n = int(input("n: "))
     count = 0
-    run(estimator, rho, count, n, alpha, 100)
+
+    arg_list = []
+
+    for i in range(20):
+        arg_list.append((estimator, rho, count, n, alpha, 5))
+
+    pool = Pool(20)
+    pool_results = pool.starmap(run, arg_list)
+    pool.close()
+    pool.join()
+
+    results = np.zeros((100, 2))
+
+    print(pool_results)
+
+    for i in range(20):
+        results[i * 5: i * 5 + 5] = pool_results[i]
+
+    print(results)
+
+    estimator_text = estimator
+
+    np.savetxt("two_sided_estimators/"+rho+"_"+str(alpha)+"_"+estimator_text+"_n_"
+               +str(n)+"_time_"+str(datetime.datetime.now())+str(count)+".csv",
+               X=results, delimiter=";")
+
     #
     # count = 0
     # arg_list = []
