@@ -79,7 +79,7 @@ if __name__ == "__main__":
     alpha = 0.7
 
     estimator = input("estimator: ")
-    rho = int("rho: ")
+    rho = input("rho: ")
     n = int(input("n: "))
     count = 0
     run(estimator, rho, count, n, alpha, 100)
