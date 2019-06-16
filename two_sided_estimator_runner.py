@@ -72,31 +72,37 @@ def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
 
 
 if __name__ == "__main__":
-    estimator_list_1 = ['naive', 'lr', 'seq', 'seq_lr']
-    estimator_list_2 = ['naive', 'seq']
-    rho_list = ['VaR', 'CVaR']
-    n_list = [100, 400, 1000, 4000, 10000, 40000, 100000]
+    # estimator_list_1 = ['naive', 'lr', 'seq', 'seq_lr']
+    # estimator_list_2 = ['naive', 'seq']
+    # rho_list = ['VaR', 'CVaR']
+    # n_list = [100, 400, 1000, 4000, 10000, 40000, 100000]
     alpha = 0.7
 
+    estimator = input("estimator: ")
+    rho = int("rho: ")
+    n = int(input("n: "))
     count = 0
-    arg_list = []
-
-    for n in n_list:
-        if n < 10000:
-            for est in estimator_list_1:
-                for rh in rho_list:
-                    count += 1
-                    arg_list.append((est, rh, count, n, alpha, 100))
-        else:
-            for est in estimator_list_2:
-                for rh in rho_list:
-                    count += 1
-                    arg_list.append((est, rh, count, n, alpha, 100))
-
-    print(arg_list)
-    print(count)
-    pool = Pool(count)
-    pool_results = pool.starmap(run, arg_list)
-    pool.close()
-    pool.join()
+    run(estimator, rho, count, n, alpha, 100)
+    #
+    # count = 0
+    # arg_list = []
+    #
+    # for n in n_list:
+    #     if n < 10000:
+    #         for est in estimator_list_1:
+    #             for rh in rho_list:
+    #                 count += 1
+    #                 arg_list.append((est, rh, count, n, alpha, 100))
+    #     else:
+    #         for est in estimator_list_2:
+    #             for rh in rho_list:
+    #                 count += 1
+    #                 arg_list.append((est, rh, count, n, alpha, 100))
+    #
+    # print(arg_list)
+    # print(count)
+    # pool = Pool(count)
+    # pool_results = pool.starmap(run, arg_list)
+    # pool.close()
+    # pool.join()
 
