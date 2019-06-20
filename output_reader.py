@@ -1,3 +1,7 @@
+"""
+read the SA output for the given runs and plot it if needed
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
 

@@ -7,6 +7,8 @@ def estimator(theta_list, x, m, alpha, rho, prob):
         sampler = problem_sampler.simple_sampler
     elif prob == "two_sided":
         sampler = problem_sampler.two_sided_sampler
+    elif prob == "quad":
+        sampler = problem_sampler.quad_sampler
     else:
         return -1
     n = len(theta_list)

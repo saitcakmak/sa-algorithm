@@ -19,6 +19,11 @@ def estimator(theta_list, x, m, alpha, rho, prob):
         sampler_lr = problem_sampler.two_sided_sampler_lr
         lr_calc = lr_calculator.two_sided_lr
         dim = 200
+    elif prob == "quad":
+        sampler = problem_sampler.quad_sampler
+        sampler_lr = problem_sampler.quad_sampler_lr
+        lr_calc = lr_calculator.quad_lr
+        dim = 1
     else:
         return -1
     n = len(theta_list)

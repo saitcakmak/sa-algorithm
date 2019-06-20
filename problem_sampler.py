@@ -25,6 +25,26 @@ def simple_sampler_lr(theta, x, m):
     return samples, ders, rvs, likelihood
 
 
+def quad_sampler(theta, x, m):
+    """ in this problem, exponential is with scale theta, rate 1/theta"""
+    xi = np.random.exponential(theta, m)
+    temp = x - xi
+    samples = temp ** 2
+    ders = 2 * x * temp
+    return samples, ders
+
+
+def quad_sampler_lr(theta, x, m):
+    """ in this problem, exponential is with scale theta, rate 1/theta"""
+    xi = np.random.exponential(theta, m)
+    temp = x - xi
+    samples = temp ** 2
+    ders = 2 * x * temp
+    rvs = xi
+    likelihood = (1 / theta) * np.exp((- xi / theta))
+    return samples, ders, rvs, likelihood
+
+
 def two_sided_sampler(theta, x, m):
     samples = np.zeros(m)
     ders = np.zeros(m)

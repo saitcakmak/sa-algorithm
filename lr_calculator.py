@@ -11,8 +11,8 @@ def simple_lr(theta, rvs, likelihood, x):
     l_0 = sci.norm.pdf(transpose[0] - theta[0])
     l_1 = sci.norm.pdf(transpose[1] - theta[1])
     l_trans = np.transpose(likelihood)
-    w_0 = l_trans[0] / l_0
-    w_1 = l_trans[1] / l_1
+    w_0 = l_0 / l_trans[0]
+    w_1 = l_1 / l_trans[1]
     weights = w_0 * w_1
     return weights
 
@@ -32,4 +32,8 @@ def two_sided_lr(theta, rvs, likelihood, x):
     return weights
 
 
+def quad_lr(theta, rvs, likelihood, x):
+    l_new = (1 / theta) * np.exp((- rvs / theta))
+    weights = l_new / likelihood
+    return weights
 

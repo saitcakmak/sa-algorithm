@@ -1,5 +1,6 @@
 """
-this is just a file to copy-paste from
+this is just a file to copy-paste from console.
+It is for plotting the comparison plot
 """
 
 MLE = [0.0864636,0.049663]

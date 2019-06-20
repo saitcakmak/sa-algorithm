@@ -6,6 +6,7 @@ from multiprocessing import Pool
 
 
 def plotter(theta, begin=10, end=30, step=0.1, m=400, count=0):
+    """ plots the objective function value for a given theta """
     start = datetime.datetime.now()
     x_vals = np.arange(begin, end, step)
     true_out = []
