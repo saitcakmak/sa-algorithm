@@ -74,7 +74,7 @@ def simple_run(estimator, budget, rep, alpha, rho, count):
 
 
 if __name__ == "__main__":
-    estimator_list = ['lr']
+    estimator_list = ["naive", "seq", "seq_lr"]
     rho_list = ['VaR', 'CVaR']
     budget_list = [1000, 10000, 100000, 1000000]
     total_rep = 100
