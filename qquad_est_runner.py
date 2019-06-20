@@ -8,11 +8,11 @@ from multiprocessing import Pool
 
 
 x = 1
-t_limit = datetime.timedelta(minutes=6.5)
+t_limit = datetime.timedelta(minutes=1)
 
 
 def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
-    m = int(n/10)
+    m = int(n*10)
     prob = "quad"
     np.random.seed()
     estimator_text = estimator
@@ -57,73 +57,37 @@ def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
 
     else:
         return 0
-    # np.savetxt("two_sided_estimators/"+rho+"_"+str(alpha)+"_"+estimator_text+"_n_"
-    #            +str(n)+"_time_"+str(datetime.datetime.now())+str(count)+".csv",
-    #            X=results, delimiter=";")
+    np.savetxt("quad_estimators/"+rho+"_"+str(alpha)+"_"+estimator_text+"_n_"
+               +str(n)+"_time_"+str(datetime.datetime.now())+str(count)+".csv",
+               X=results, delimiter=";")
 
     return results
 
 
 if __name__ == "__main__":
-    # estimator_list_1 = ['naive', 'lr', 'seq', 'seq_lr']
-    # estimator_list_2 = ['naive', 'seq']
-    # rho_list = ['VaR', 'CVaR']
-    # n_list = [100, 400, 1000, 4000, 10000, 40000, 100000]
-    alp = 0.7
+    estimator_list = ["naive", "lr", "seq", "seq_lr"]
+    rho_list = ['CVaR']
+    budget_list = [100, 400, 1000, 4000]
+    total_rep = 100
+    rep_list = total_rep * np.array([1, 1, 1, 1])
+    repeater = [1, 1, 1, 1]
+    alpha_list = [0.5, 0.8, 0.99]
 
-    est = input("estimator: ")
-    # rh = input("rho: ")
-    rh = "CVaR"
-    bud = int(input("n: "))
-    c = 0
-
+    count = 0
     arg_list = []
 
-    for i in range(20):
-        arg_list.append((est, rh, c, bud, alp, 5))
+    for est in estimator_list:
+        for rh in rho_list:
+            for alp in alpha_list:
+                for i in range(4):
+                    for j in range(repeater[i]):
+                        count += 1
+                        arg_list.append((est, budget_list[i], int(rep_list[i]), alp, rh, count))
 
-    pool = Pool(20)
+    print(arg_list)
+    print(count)
+    pool = Pool(32)
     pool_results = pool.starmap(run, arg_list)
     pool.close()
     pool.join()
-
-    res = np.zeros((100, 2))
-
-    print(pool_results)
-
-    for i in range(20):
-        res[i * 5: i * 5 + 5] = pool_results[i]
-
-    print(res)
-
-    est_text = est
-
-    np.savetxt("two_sided_estimators/"+rho+"_"+str(alpha)+"_"+est_text+"_n_"
-               +str(n)+"_time_"+str(datetime.datetime.now())+str(count)+".csv",
-               X=results, delimiter=";")
-
-    #
-    # count = 0
-    # arg_list = []
-    #
-    # for n in n_list:
-    #     if n < 10000:
-    #         for est in estimator_list_1:
-    #             for rh in rho_list:
-    #                 count += 1
-    #                 arg_list.append((est, rh, count, n, alpha, 100))
-    #     else:
-    #         for est in estimator_list_2:
-    #             for rh in rho_list:
-    #                 count += 1
-    #                 arg_list.append((est, rh, count, n, alpha, 100))
-    #
-    # print(arg_list)
-    # print(count)
-    # pool = Pool(count)
-    # pool_results = pool.starmap(run, arg_list)
-    # pool.close()
-    # pool.join()
-
-
 
