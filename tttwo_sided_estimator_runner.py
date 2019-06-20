@@ -17,6 +17,7 @@ def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
     m = int(n/10)
     prob = "two_sided"
     seq = 0
+    est_text = estimator
     np.random.seed()
     if estimator == "naive":
         estimator = naive_estimator.estimator
@@ -59,7 +60,7 @@ def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
         results = np.zeros((rep, 2))
         for i in range(rep):
             now = datetime.datetime.now()
-            print(rho, str(alpha), estimator_text, "n: ", n, " rep ", i, rho, " time ",
+            print(rho, str(alpha), est_text, "n: ", n, " rep ", i, rho, " time ",
                   now-start)
             index = np.random.randint(100000, size=n)
             t_c = t_c_list[index]
@@ -75,7 +76,7 @@ def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
         results = np.zeros((rep, 2))
         for i in range(rep):
             now = datetime.datetime.now()
-            print(rho, str(alpha), estimator_text, "n: ", n, " rep ", i, rho, " time ",
+            print(rho, str(alpha), est_text, "n: ", n, " rep ", i, rho, " time ",
                   now - start)
             index = np.random.randint(100000, size=n)
             t_c = t_c_list[index]
