@@ -7,6 +7,7 @@ import datetime
 from multiprocessing import Pool
 
 x = 2
+t_limit = datetime.timedelta(minutes=3.3)
 
 
 def simple_run(estimator, budget, rep, alpha, rho, count):
