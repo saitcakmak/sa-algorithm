@@ -122,7 +122,7 @@ if __name__ == "__main__":
 
     print(arg_list)
     print(count)
-    pool = Pool(count)
+    pool = Pool(32)
     pool_results = pool.starmap(simple_run, arg_list)
     pool.close()
     pool.join()
