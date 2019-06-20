@@ -12,7 +12,7 @@ t_limit = datetime.timedelta(minutes=1)
 
 
 def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
-    m = int(n*10)
+    m = n
     prob = "quad"
     np.random.seed()
     estimator_text = estimator
@@ -57,39 +57,73 @@ def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
 
     else:
         return 0
-    np.savetxt("quad_estimators/"+rho+"_"+str(alpha)+"_"+estimator_text+"_n_"
-               +str(n)+"_time_"+str(datetime.datetime.now())+str(count)+".csv",
-               X=results, delimiter=";")
+    # np.savetxt("quad_estimators/"+rho+"_"+str(alpha)+"_"+estimator_text+"_n_"
+    #            +str(n)+"_time_"+str(datetime.datetime.now())+str(count)+".csv",
+    #            X=results, delimiter=";")
 
     return results
 
 
 if __name__ == "__main__":
-    estimator_list = ["naive", "lr", "seq", "seq_lr"]
-    rho_list = ['CVaR']
-    budget_list = [100, 400, 1000, 4000]
-    total_rep = 100
-    rep_list = total_rep * np.array([1, 1, 1, 1])
-    repeater = [1, 1, 1, 1]
-    alpha_list = [0.5, 0.8, 0.99]
+    # estimator_list = ["seq"]
+    # rho_list = ['CVaR']
+    # budget_list = [100, 400, 1000, 4000]
+    # total_rep = 100
+    # rep_list = total_rep * np.array([1, 1, 1, 1])
+    # repeater = [1, 1, 1, 1]
+    # # alpha_list = [0.5, 0.8, 0.99]
+    # alpha_list = [0.9]
+    #
+    # count = 0
+    # arg_list = []
+    #
+    # for est in estimator_list:
+    #     for rh in rho_list:
+    #         for alp in alpha_list:
+    #             for i in range(4):
+    #                 for j in range(repeater[i]):
+    #                     count += 1
+    #                     # arg_list.append((est, rh, count, budget_list[i], alp, int(rep_list[i])))
+    #                     run(est, rh, count, budget_list[i], alp, int(rep_list[i]))
 
+    # print(arg_list)
+    # print(count)
+    # pool = Pool()
+    # pool_results = pool.starmap(run, arg_list)
+    # pool.close()
+    # pool.join()
+    #
+    # run("seq_lr", "CVaR", 1, 100, 0.5, 1)
+
+    alpha = 0.9
+
+    estimator = "seq"
+    rho = "CVaR"
+    n = 10000
     count = 0
+
     arg_list = []
 
-    for est in estimator_list:
-        for rh in rho_list:
-            for alp in alpha_list:
-                for i in range(4):
-                    for j in range(repeater[i]):
-                        count += 1
-                        arg_list.append((est, rh, count, budget_list[i], alp, int(rep_list[i]),))
+    for i in range(20):
+        arg_list.append((estimator, rho, count, n, alpha, 5))
 
-    print(arg_list)
-    print(count)
-    pool = Pool(32)
+    pool = Pool()
     pool_results = pool.starmap(run, arg_list)
     pool.close()
     pool.join()
-    #
-    # run("seq_lr", "CVaR", 1, 100, 0.5, 1)
+
+    results = np.zeros((100, 2))
+
+    print(pool_results)
+
+    for i in range(20):
+        results[i * 5: i * 5 + 5] = pool_results[i]
+
+    print(results)
+
+    estimator_text = estimator+"5"
+
+    np.savetxt("quad_estimators/"+rho+"_"+str(alpha)+"_"+estimator_text+"_n_"
+               +str(n)+"_time_"+str(datetime.datetime.now())+str(count)+".csv",
+               X=results, delimiter=";")
 

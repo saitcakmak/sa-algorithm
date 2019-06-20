@@ -2,7 +2,7 @@ import numpy as np
 import problem_sampler
 
 
-def estimator(theta_list, x, m, alpha, rho, prob):
+def estimator(theta_list, x, m, alpha, rho, prob, seq=0):
     if prob == "simple":
         sampler = problem_sampler.simple_sampler
     elif prob == "two_sided":

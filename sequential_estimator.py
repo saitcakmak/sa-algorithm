@@ -4,10 +4,10 @@ import scipy.stats as sci
 
 # Confidence for the t-test used and sequence of budget percentages
 conf = 0.95
-seq = np.array([0.12, 0.16, 0.22])
+seq_0 = np.array([0.12, 0.16, 0.22])
 
 
-def estimator(theta_list, x, m, alpha, rho, prob):
+def estimator(theta_list, x, m, alpha, rho, prob, seq=seq_0):
     if prob == "simple":
         sampler = problem_sampler.simple_sampler
     elif prob == "two_sided":

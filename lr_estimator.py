@@ -7,7 +7,7 @@ import scipy.stats as sci
 conf = 0.95
 
 
-def estimator(theta_list, x, m, alpha, rho, prob):
+def estimator(theta_list, x, m, alpha, rho, prob, seq=0):
     if prob == "simple":
         sampler = problem_sampler.simple_sampler_lr
         lr_calc = lr_calculator.simple_lr

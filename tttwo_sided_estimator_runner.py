@@ -9,22 +9,47 @@ from multiprocessing import Pool
 x = 10
 t_c_list = np.load("mcmc_out/out_c_try.npy")
 t_p_list = np.load("mcmc_out/out_p_try.npy")
-t_limit = datetime.timedelta(minutes=6.5)
+t_limit = datetime.timedelta(minutes=3.3)
+seq_0 = np.array([0.12, 0.16, 0.22])
 
 
 def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
     m = int(n/10)
     prob = "two_sided"
+    seq = 0
     np.random.seed()
-    estimator_text = estimator
     if estimator == "naive":
         estimator = naive_estimator.estimator
+        seq = 0
     elif estimator == "lr":
         estimator = lr_estimator.estimator
-    elif estimator == "seq":
-        estimator = sequential_estimator.estimator
-    elif estimator == "seq_lr":
+        seq = 0
+    elif "seq_lr" in estimator:
+        seq_ct = estimator[-1]
         estimator = sequential_lr_estimator.estimator
+        if seq_ct == "r":
+            seq = seq_0
+        elif seq_ct == "2":
+            seq = np.array([0.12, 0.16])
+        elif seq_ct == "3":
+            seq = np.array([0.10])
+        elif seq_ct == "4":
+            seq = np.array([0.04, 0.06])
+        elif seq_ct == "5":
+            seq = np.array([0.10, 0.15])
+    elif "seq" in estimator:
+        seq_ct = estimator[-1]
+        estimator = sequential_estimator.estimator
+        if seq_ct == "q":
+            seq = seq_0
+        elif seq_ct == "2":
+            seq = np.array([0.12, 0.16])
+        elif seq_ct == "3":
+            seq = np.array([0.10])
+        elif seq_ct == "4":
+            seq = np.array([0.04, 0.06])
+        elif seq_ct == "5":
+            seq = np.array([0.10, 0.15])
     else:
         return 0
 
@@ -40,7 +65,7 @@ def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
             t_c = t_c_list[index]
             t_p = t_p_list[index]
             t_list = np.transpose([t_c, t_p])
-            results[i] = estimator(t_list, x, m, alpha, rho, prob)
+            results[i] = estimator(t_list, x, m, alpha, rho, prob, seq)
             now_2 = datetime.datetime.now()
             if (now_2 - now) > t_limit:
                 print("TIME EXCEEDED: ", rho, str(alpha), estimator_text, "n: ", n)
@@ -56,7 +81,7 @@ def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
             t_c = t_c_list[index]
             t_p = t_p_list[index]
             t_list = np.transpose([t_c, t_p])
-            results[i] = estimator(t_list, x, m, alpha, rho, prob)
+            results[i] = estimator(t_list, x, m, alpha, rho, prob, seq)
             now_2 = datetime.datetime.now()
             if (now_2 - now) > t_limit:
                 print("TIME EXCEEDED: ", rho, str(alpha), estimator_text, "n: ", n)
@@ -64,70 +89,47 @@ def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
 
     else:
         return 0
-    # np.savetxt("two_sided_estimators/"+rho+"_"+str(alpha)+"_"+estimator_text+"_n_"
-    #            +str(n)+"_time_"+str(datetime.datetime.now())+str(count)+".csv",
-    #            X=results, delimiter=";")
 
     return results
 
 
 if __name__ == "__main__":
-    # estimator_list_1 = ['naive', 'lr', 'seq', 'seq_lr']
-    # estimator_list_2 = ['naive', 'seq']
-    # rho_list = ['VaR', 'CVaR']
-    # n_list = [100, 400, 1000, 4000, 10000, 40000, 100000]
-    alpha = 0.7
+    estimator_list = ['naive', 'lr', 'seq', 'seq_lr', 'seq2', 'seq3', 'seq4', 'seq5', 'seq_lr2', 'seq_lr3', 'seq_lr4', 'seq_lr5']
+    rho_list = ['VaR', 'CVaR']
+    n_list = [100, 400, 1000, 4000, 10000]
+    alp = 0.8
 
-    estimator = input("estimator: ")
-    rho = input("rho: ")
-    n = int(input("n: "))
-    count = 0
+    # est = input("estimator: ")
+    # rh = input("rho: ")
+    # bud = int(input("n: "))
+    ct = 0
 
-    arg_list = []
+    for bud in n_list:
+        for est in estimator_list:
+            for rh in rho_list:
+                ct += 1
+                arg_list = []
+                parts = 50
+                rep2 = int(100/parts)
+                for i in range(parts):
+                    arg_list.append((est, rh, ct, bud, alpha, rep2))
 
-    for i in range(20):
-        arg_list.append((estimator, rho, count, n, alpha, 5))
+                pool = Pool(parts)
+                pool_results = pool.starmap(run, arg_list)
+                pool.close()
+                pool.join()
 
-    pool = Pool(20)
-    pool_results = pool.starmap(run, arg_list)
-    pool.close()
-    pool.join()
+                res = np.zeros((100, 2))
 
-    results = np.zeros((100, 2))
+                print(pool_results)
 
-    print(pool_results)
+                for i in range(parts):
+                    res[i * rep2: i * rep2 + rep2] = pool_results[i]
 
-    for i in range(20):
-        results[i * 5: i * 5 + 5] = pool_results[i]
+                # print(res)
 
-    print(results)
+                estimator_text = est
 
-    estimator_text = estimator
-
-    np.savetxt("two_sided_estimators/"+rho+"_"+str(alpha)+"_"+estimator_text+"_n_"
-               +str(n)+"_time_"+str(datetime.datetime.now())+str(count)+".csv",
-               X=results, delimiter=";")
-
-    #
-    # count = 0
-    # arg_list = []
-    #
-    # for n in n_list:
-    #     if n < 10000:
-    #         for est in estimator_list_1:
-    #             for rh in rho_list:
-    #                 count += 1
-    #                 arg_list.append((est, rh, count, n, alpha, 100))
-    #     else:
-    #         for est in estimator_list_2:
-    #             for rh in rho_list:
-    #                 count += 1
-    #                 arg_list.append((est, rh, count, n, alpha, 100))
-    #
-    # print(arg_list)
-    # print(count)
-    # pool = Pool(count)
-    # pool_results = pool.starmap(run, arg_list)
-    # pool.close()
-    # pool.join()
-
+                np.savetxt("two_sided_estimators/"+rh+"_"+str(alp)+"_"+estimator_text+"_n_"
+                           +str(bud)+"_time_"+str(datetime.datetime.now())+str(ct)+".csv",
+                           X=res, delimiter=";")
