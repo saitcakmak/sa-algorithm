@@ -112,7 +112,7 @@ if __name__ == "__main__":
                 parts = 20
                 rep2 = int(100/parts)
                 for i in range(parts):
-                    arg_list.append((est, rh, ct, bud, alpha, rep2))
+                    arg_list.append((est, rh, ct, bud, alp, rep2))
 
                 pool = Pool(parts)
                 pool_results = pool.starmap(run, arg_list)
