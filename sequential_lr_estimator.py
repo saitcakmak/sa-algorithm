@@ -101,7 +101,8 @@ def estimator(theta_list, x, m, alpha, rho, prob, seq=seq_0):
                     else:
                         spare += 1
 
-        updated_list = np.array(next_list)
+        if len(next_list) != 0:
+            updated_list = np.array(next_list)
 
     # Restart
     remaining_budget = total_budget - budget_used

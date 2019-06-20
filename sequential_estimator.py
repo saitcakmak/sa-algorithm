@@ -90,8 +90,8 @@ def estimator(theta_list, x, m, alpha, rho, prob, seq=seq_0):
                         old_std.append(std[i])
                     else:
                         spare += 1
-
-        updated_list = np.array(next_list)
+        if len(next_list) != 0:
+            updated_list = np.array(next_list)
 
     # Restart
     means = np.zeros(len(updated_list))
