@@ -47,9 +47,8 @@ def estimator(theta_list, x, m, alpha, rho, prob, seq=seq_0):
         var_std = std[int(n * alpha) - spare]
 
         next_list = []
-        old_means = []
-        old_std = []
-        m_used += m
+        new_old_means = []
+        new_old_std = []
 
         # Update the survivor list
         if rho == "VaR":
@@ -64,8 +63,8 @@ def estimator(theta_list, x, m, alpha, rho, prob, seq=seq_0):
                     df = 10
                 if diff < t_std * sci.t.ppf(conf, df) or t_std == 0:
                     next_list.append(theta)
-                    old_means.append(means[i])
-                    old_std.append(std[i])
+                    new_old_means.append(means[i])
+                    new_old_std.append(std[i])
                 elif means[i] < var_mean:
                     spare += 1
 
@@ -74,8 +73,8 @@ def estimator(theta_list, x, m, alpha, rho, prob, seq=seq_0):
                 theta = updated_list[i]
                 if means[i] > var_mean:
                     next_list.append(theta)
-                    old_means.append(means[i])
-                    old_std.append(std[i])
+                    new_old_means.append(means[i])
+                    new_old_std.append(std[i])
                 else:
                     diff = abs(var_mean - means[i])
                     theta_std = std[i]
@@ -86,12 +85,15 @@ def estimator(theta_list, x, m, alpha, rho, prob, seq=seq_0):
                         df = 10
                     if diff < t_std * sci.t.ppf(conf, df) or t_std == 0:
                         next_list.append(theta)
-                        old_means.append(means[i])
-                        old_std.append(std[i])
+                        new_old_means.append(means[i])
+                        new_old_std.append(std[i])
                     else:
                         spare += 1
         if len(next_list) != 0:
+            m_used += m
             updated_list = np.array(next_list)
+            old_means = new_old_means
+            old_std = new_old_std
 
     # Restart
     means = np.zeros(len(updated_list))
