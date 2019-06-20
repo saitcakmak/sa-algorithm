@@ -90,4 +90,6 @@ if __name__ == "__main__":
     pool_results = pool.starmap(run, arg_list)
     pool.close()
     pool.join()
+    #
+    # run("seq_lr", "CVaR", 1, 100, 0.5, 1)
 

@@ -108,8 +108,12 @@ def estimator(theta_list, x, m, alpha, rho, prob):
     m = int(remaining_budget / len(updated_list))
     vals = np.zeros((len(updated_list), m))
     ders = np.zeros((len(updated_list), m))
-    rvs = np.zeros((len(updated_list), m, dim))
-    likelihoods = np.zeros((len(updated_list), m, dim))
+    if dim > 1:
+        rvs = np.zeros((len(updated_list), m, dim))
+        likelihoods = np.zeros((len(updated_list), m, dim))
+    else:
+        rvs = np.zeros((len(updated_list), m))
+        likelihoods = np.zeros((len(updated_list), m))
 
     # New samples with the remaining budget and estimation
     for i in range(len(updated_list)):

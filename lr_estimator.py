@@ -27,8 +27,12 @@ def estimator(theta_list, x, m, alpha, rho, prob):
     std_est = np.zeros(n)
     vals = np.zeros((n, m))
     ders = np.zeros((n, m))
-    rvs = np.zeros((n, m, dim))
-    likelihoods = np.zeros((n, m, dim))
+    if dim > 1:
+        rvs = np.zeros((n, m, dim))
+        likelihoods = np.zeros((n, m, dim))
+    else:
+        rvs = np.zeros((n, m))
+        likelihoods = np.zeros((n, m))
 
     # Draw samples and keep track of the data and estimated means & std dev
     for i in range(n):
