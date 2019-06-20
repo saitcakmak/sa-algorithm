@@ -82,7 +82,7 @@ if __name__ == "__main__":
                 for i in range(4):
                     for j in range(repeater[i]):
                         count += 1
-                        arg_list.append((est, budget_list[i], int(rep_list[i]), alp, rh, count))
+                        arg_list.append((est, rh, count, budget_list[i], alp, int(rep_list[i]),))
 
     print(arg_list)
     print(count)
