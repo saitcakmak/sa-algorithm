@@ -3,9 +3,6 @@ from naive_estimator import estimator
 import datetime
 
 
-t_c_list = np.load("mcmc_out/out_c_try.npy")
-t_p_list = np.load("mcmc_out/out_p_try.npy")
-
 eps_num = 20
 eps_base = 100
 x_low = 1
@@ -37,18 +34,25 @@ def sa_run(alpha, rho, out_string="", x0=5, n0=100, iter_count=1000):
         now = datetime.datetime.now()
         print(rho + "_" + str(alpha) + " t = ", t, " x = ", x_list[t], " val = ", val, " der = ",
               der, " time: ", now - begin)
-        if t % 100 == 0:
-            np.save("sa_out/" + rho + "_" + str(alpha) + "_" + out_string + "_iter_" + str(iter_count) + "_eps" + str(
-                eps_num) + "-" + str(eps_base) + "_x.npy", x_list)
-            np.save("sa_out/" + rho + "_" + str(alpha) + "_" + out_string + "_iter_" + str(iter_count) + "_eps" + str(
-                eps_num) + "-" + str(eps_base) + "_val.npy", val_list)
-            np.save("sa_out/" + rho + "_" + str(alpha) + "_" + out_string + "_iter_" + str(iter_count) + "_eps" + str(
-                eps_num) + "-" + str(eps_base) + "_der.npy", der_list)
+    np.save("sa_out/" + rho + "_" + str(alpha) + "_" + out_string + "_iter_" + str(iter_count) + "_eps" + str(
+        eps_num) + "-" + str(eps_base) + "_x.npy", x_list)
+    # np.save("sa_out/" + rho + "_" + str(alpha) + "_" + out_string + "_iter_" + str(iter_count) + "_eps" + str(
+    #     eps_num) + "-" + str(eps_base) + "_val.npy", val_list)
+    # np.save("sa_out/" + rho + "_" + str(alpha) + "_" + out_string + "_iter_" + str(iter_count) + "_eps" + str(
+    #     eps_num) + "-" + str(eps_base) + "_der.npy", der_list)
     return x_list, val_list, der_list
+
+
+def main(alp, rh, text, input_str="1"):
+    global t_c_list, t_p_list
+    t_c_list = np.load("mcmc_out/out_c_" + input_str + ".npy")
+    t_p_list = np.load("mcmc_out/out_p_" + input_str + ".npy")
+    sa_run(alp, rh, text)
 
 
 if __name__ == "__main__":
     alp = float(input("alpha: " ))
     rh = input("rho: ")
     text = input("text: ")
-    sa_run(alp, rh, text)
+
+    main(alp, rh, text)

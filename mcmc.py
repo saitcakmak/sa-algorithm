@@ -2,10 +2,8 @@ import numpy as np
 import datetime
 
 
-start = datetime.datetime.now()
-candidate_std = 0.005
-delta = 10 ** -6
-
+candidate_std = 0.025
+# delta = 10 ** -6
 K_c = 40
 K_p = 20
 price = 10
@@ -15,7 +13,7 @@ theta_p = 0.05
 lam_c = K_c * 2 * np.exp(- theta_c * price) / (1 + np.exp(- theta_c * price))
 lam_p = K_p * (1 - np.exp(- theta_p * price)) / (1 + np.exp(- theta_p * price))
 
-lb = 0
+lb = 0.01
 ub = 0.5
 
 
@@ -24,10 +22,13 @@ def lr_c(candidate, theta):
     for entry in samples_c:
         lam_cand = K_c * 2 * np.exp(- candidate * price) / (1 + np.exp(- candidate * price))
         lam_curr = K_c * 2 * np.exp(- theta * price) / (1 + np.exp(- theta * price))
-        p_cand = np.exp(- lam_cand * (entry - delta)) - np.exp(- lam_cand * entry)
-        p_curr = np.exp(- lam_curr * (entry - delta)) - np.exp(- lam_curr * entry)
+        # p_cand = np.exp(- lam_cand * (entry - delta)) - np.exp(- lam_cand * entry)  # cdf diff
+        # p_curr = np.exp(- lam_curr * (entry - delta)) - np.exp(- lam_curr * entry)
+        p_cand = lam_cand * np.exp(- lam_cand * entry)  # pdf
+        p_curr = lam_curr * np.exp(- lam_curr * entry)  # pdf
         ratio_list.append(p_cand/p_curr)
     prob = np.prod(ratio_list)
+    print(prob)
     return np.nan_to_num(prob)
 
 
@@ -36,10 +37,13 @@ def lr_p(candidate, theta):
     for entry in samples_p:
         lam_cand = K_p * (1 - np.exp(- candidate * price)) / (1 + np.exp(- candidate * price))
         lam_curr = K_p * (1 - np.exp(- theta * price)) / (1 + np.exp(- theta * price))
-        p_cand = np.exp(- lam_cand * (entry - delta)) - np.exp(- lam_cand * entry)
-        p_curr = np.exp(- lam_curr * (entry - delta)) - np.exp(- lam_curr * entry)
+        # p_cand = np.exp(- lam_cand * (entry - delta)) - np.exp(- lam_cand * entry) # cdf diff
+        # p_curr = np.exp(- lam_curr * (entry - delta)) - np.exp(- lam_curr * entry)
+        p_cand = lam_cand * np.exp(- lam_cand * entry)  # pdf
+        p_curr = lam_curr * np.exp(- lam_curr * entry)  # pdf
         ratio_list.append(p_cand/p_curr)
     prob = np.prod(ratio_list)
+    print(prob)
     return np.nan_to_num(prob)
 
 
@@ -99,16 +103,17 @@ def mcmc_p(run_length, theta, string):
     np.save("mcmc_out/out_p_" + string + ".npy", output[-run_length:])
 
 
-if __name__ == "__main__":
-    size = 10
-    out_string = input("output string: ")
+def main_run(out_string, size=10):
+    global samples_c, samples_p, start
+    start = datetime.datetime.now()
     length = 100000
     t_start = 0.075
-    samples_c = np.random.exponential(lam_c, size)
-    samples_p = np.random.exponential(lam_p, size)
+    samples_c = np.random.exponential(1/lam_c, size)
+    samples_p = np.random.exponential(1/lam_p, size)
     input_data = {"size": size, "cust": samples_c, "prov": samples_p}
-    np.save("input_data_" + out_string + ".npy", input_data)
+    np.save("input_data/input_data_" + out_string + ".npy", input_data)
     mcmc_c(length, t_start, out_string)
     mcmc_p(length, t_start, out_string)
     end = datetime.datetime.now()
-    print("done! time: ", end-start)
+    print("done! " + out_string + " time: ", end-start)
+
