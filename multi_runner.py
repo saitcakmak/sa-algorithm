@@ -3,7 +3,7 @@ import sa_runner
 from multiprocessing import Pool
 
 
-run_count = 1
+run_count = 50
 alp = float(input("alpha: "))
 rh = input("rho: ")
 
