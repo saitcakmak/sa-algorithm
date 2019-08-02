@@ -12,7 +12,15 @@ for i in range(1, run_count+1):
     text = "run_" + str(i)
     arg_list.append((alp, rh, text))
 
+
+def dummy(alp, rh, text):
+    np.random.seed()
+    return np.random.rand()
+
+
 pool = Pool(run_count)
 pool_results = pool.starmap(sa_runner.main, arg_list)
+# pool_results = pool.starmap(dummy, arg_list)
 pool.close()
 pool.join()
+# print(pool_results)

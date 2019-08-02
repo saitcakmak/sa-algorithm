@@ -45,6 +45,7 @@ def sa_run(alpha, rho, out_string="", x0=5, n0=100, iter_count=1000):
 
 def main(alp, rh, text, input_str="1"):
     global t_c_list, t_p_list
+    np.random.seed()
     t_c_list = np.load("mcmc_out/out_c_" + input_str + ".npy")
     t_p_list = np.load("mcmc_out/out_p_" + input_str + ".npy")
     sa_run(alp, rh, text)
