@@ -8,16 +8,15 @@ delta = 10 ** -6
 
 K_c = 40
 K_p = 20
+price = 10
+theta_c = 0.1
+theta_p = 0.05
 
-samples_c = [0.0195015, 0.02022016, 0.03236796, 0.00362713, 0.00183414,
-             0.14411868, 0.10316238, 0.01894079, 0.00809587, 0.06989924]
-samples_p = [0.02718718, 0.33309152, 0.01486785, 0.47200697, 0.1829244,
-             0.40767248, 0.24125914, 0.24619485, 0.06222773, 0.06732975]
+lam_c = K_c * 2 * np.exp(- theta_c * price) / (1 + np.exp(- theta_c * price))
+lam_p = K_p * (1 - np.exp(- theta_p * price)) / (1 + np.exp(- theta_p * price))
 
 lb = 0
 ub = 0.5
-
-price = 10
 
 
 def lr_c(candidate, theta):
@@ -75,14 +74,14 @@ def mcmc_c(run_length, theta, string):
     run the mcmc algorithm to do the sampling for a given length with given starting value
     """
     output = []
-    for j in range(int(run_length/10000)):
+    for j in range(int(run_length/10000)+1):
         print("C replication '0000s:", j, " time: ", datetime.datetime.now() - start)
         inner_out = []
         for i in range(10000):
             theta = theta_next_c(theta)
             inner_out.append(theta)
         output = output + inner_out
-        np.save("mcmc_out/out_c_" + string + ".npy", output)
+    np.save("mcmc_out/out_c_" + string + ".npy", output[-run_length:])
 
 
 def mcmc_p(run_length, theta, string):
@@ -90,20 +89,25 @@ def mcmc_p(run_length, theta, string):
     run the mcmc algorithm to do the sampling for a given length with given starting value
     """
     output = []
-    for j in range(int(run_length/10000)):
+    for j in range(int(run_length/10000)+1):
         print("P replication '0000s:", j, " time: ", datetime.datetime.now() - start)
         inner_out = []
         for i in range(10000):
             theta = theta_next_p(theta)
             inner_out.append(theta)
         output = output + inner_out
-        np.save("mcmc_out/out_p_" + string + ".npy", output)
+    np.save("mcmc_out/out_p_" + string + ".npy", output[-run_length:])
 
 
 if __name__ == "__main__":
+    size = 10
     out_string = input("output string: ")
     length = 100000
     t_start = 0.075
+    samples_c = np.random.exponential(lam_c, size)
+    samples_p = np.random.exponential(lam_p, size)
+    input_data = {"size": size, "cust": samples_c, "prov": samples_p}
+    np.save("input_data_" + out_string + ".npy", input_data)
     mcmc_c(length, t_start, out_string)
     mcmc_p(length, t_start, out_string)
     end = datetime.datetime.now()

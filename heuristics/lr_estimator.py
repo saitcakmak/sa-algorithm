@@ -1,6 +1,6 @@
 import numpy as np
 import problem_sampler
-import lr_calculator
+from heuristics import lr_calculator
 import scipy.stats as sci
 
 # Confidence of the t-test

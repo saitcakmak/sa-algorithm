@@ -1,7 +1,7 @@
 import numpy as np
 import problem_sampler
 import scipy.stats as sci
-import lr_calculator
+from heuristics import lr_calculator
 
 # Confidence for the t-test used and sequence of budget percentages
 conf = 0.95

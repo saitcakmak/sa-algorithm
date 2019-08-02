@@ -1,8 +1,6 @@
 import numpy as np
 import naive_estimator
-import lr_estimator
-import sequential_estimator
-import sequential_lr_estimator
+from heuristics import lr_estimator, sequential_estimator, sequential_lr_estimator
 import datetime
 from multiprocessing import Pool
 
@@ -95,9 +93,9 @@ def run(estimator, rho, count, n=400, alpha=0.6, rep=100):
 
 
 if __name__ == "__main__":
-    estimator_list = ['naive', 'lr', 'seq', 'seq_lr', 'seq2', 'seq3', 'seq4', 'seq5', 'seq_lr2', 'seq_lr3', 'seq_lr4', 'seq_lr5']
+    estimator_list = ['naive', 'seq', 'seq2', 'seq3', 'seq4', 'seq5']
     rho_list = ['VaR', 'CVaR']
-    n_list = [100, 400, 1000, 4000]
+    n_list = [4000, 10000]
     alp = 0.8
 
     # est = input("estimator: ")
