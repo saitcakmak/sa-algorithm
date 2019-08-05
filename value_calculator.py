@@ -29,7 +29,7 @@ def estimate(rho, alpha, x, n=1000):
     pool.join()
 
     end = datetime.datetime.now()
-    print("done, ", end-start)
+    # print("done, ", end-start)
     results = np.array(results)
     vals = results[:, 0]
     vals = np.sort(vals)
@@ -39,3 +39,11 @@ def estimate(rho, alpha, x, n=1000):
         return vals[int(n * alpha)]
     else:
         return 0
+
+
+def big_run():
+    for i in range(50):
+        np.random.seed(0)
+        x = 23 + 0.02 * i
+        val = estimate("CVaR", 0.5, x, 1000)
+        print(x, val)
