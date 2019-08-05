@@ -41,9 +41,9 @@ def estimate(rho, alpha, x, n=1000):
         return 0
 
 
-def big_run():
+def big_run(n=1000, seed=0):
     for i in range(50):
-        np.random.seed(0)
+        np.random.seed(seed)
         x = 23 + 0.02 * i
-        val = estimate("CVaR", 0.5, x, 1000)
+        val = estimate("CVaR", 0.5, x, n)
         print(x, val)
