@@ -18,7 +18,7 @@ ub = 0.5
 
 def lr_c(candidate, theta, size):
     ratio_list = []
-    for entry in samples_c:
+    for entry in samples_c[:size]:
         lam_cand = K_c * 2 * np.exp(- candidate * price) / (1 + np.exp(- candidate * price))
         lam_curr = K_c * 2 * np.exp(- theta * price) / (1 + np.exp(- theta * price))
         p_cand = lam_cand * np.exp(- lam_cand * entry)  # pdf
@@ -30,7 +30,7 @@ def lr_c(candidate, theta, size):
 
 def lr_p(candidate, theta, size):
     ratio_list = []
-    for entry in samples_p:
+    for entry in samples_p[:size]:
         lam_cand = K_p * (1 - np.exp(- candidate * price)) / (1 + np.exp(- candidate * price))
         lam_curr = K_p * (1 - np.exp(- theta * price)) / (1 + np.exp(- theta * price))
         p_cand = lam_cand * np.exp(- lam_cand * entry)  # pdf
@@ -73,7 +73,7 @@ def mcmc_c(run_length, theta, string, candidate_std, size):
     start = datetime.datetime.now()
     output = []
     for j in range(int(run_length/10000)+1):
-        print("C replication '0000s:", j, " time: ", datetime.datetime.now() - start)
+        print("C size: " + str(size) + ", replication '0000s:", j, " time: ", datetime.datetime.now() - start)
         inner_out = []
         for i in range(10000):
             theta = theta_next_c(theta, candidate_std, size)
@@ -89,13 +89,22 @@ def mcmc_p(run_length, theta, string, candidate_std, size):
     start = datetime.datetime.now()
     output = []
     for j in range(int(run_length/10000)+1):
-        print("P replication '0000s:", j, " time: ", datetime.datetime.now() - start)
+        print("P size: " + str(size) + ", replication '0000s:", j, " time: ", datetime.datetime.now() - start)
         inner_out = []
         for i in range(10000):
             theta = theta_next_p(theta, candidate_std, size)
             inner_out.append(theta)
         output = output + inner_out
     np.save("mcmc_out/out_p_online_" + string + ".npy", output[-run_length:])
+
+
+def run_both(run_length, theta, string, candidate_std, size, choice):
+    if choice == "c":
+        mcmc_c(run_length, theta, string, candidate_std, size)
+    elif choice == "p":
+        mcmc_p(run_length, theta, string, candidate_std, size)
+    else:
+        return 0
 
 
 def main_run(size=10, total=10):
@@ -112,14 +121,16 @@ def main_run(size=10, total=10):
     np.save("input_data/input_data_online.npy", input_data)
     arg_list = []
     for i in range(total):
-        args = (length, t_start, str(i), candidate_std - int(i/2) * std_diff, size * 2 ** i)
+        args = (length, t_start, str(i), candidate_std - int(i/2) * std_diff, size * 2 ** i, "c")
+        arg_list.append(args)
+        args = (length, t_start, str(i), candidate_std - int(i/2) * std_diff, size * 2 ** i, "p")
+        arg_list.append(args)
     pool = Pool()
-    res_1 = pool.starmap(mcmc_c, arg_list)
-    res_2 = pool.starmap(mcmc_p, arg_list)
+    res = pool.starmap(run_both, arg_list)
     pool.close()
     pool.join()
     end = datetime.datetime.now()
-    print("done! " + out_string + " time: ", end-start)
+    print("done! time: ", end-start)
 
 
 if __name__ == '__main__':
