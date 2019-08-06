@@ -23,6 +23,7 @@ def estimate(x, n, alpha, rho, t_c_list, t_p_list, in_data):
         t_list = np.full_like( np.zeros((n, 2)), np.array([t_c, t_p]) )
     m = int(n/10)
     var, der = estimator(t_list, x, m, alpha, rho, "two_sided")
+    print("rho: ", rho, " var, der: ", var, der)
     return var, der
 
 
@@ -47,12 +48,12 @@ def sa_run(alpha, rho, t_c_list, t_p_list, in_data, out_string="",  x0=5, n0=100
     return x_list, val_list, der_list
 
 
-def main(alp, rh, text, input_str="1"):
+def main(alpha, rho, text, input_str="1"):
     np.random.seed()
     t_c_list = np.load("mcmc_out/out_c_" + input_str + ".npy")
     t_p_list = np.load("mcmc_out/out_p_" + input_str + ".npy")
     in_data = np.load("input_data/input_data_" + input_str + ".npy", allow_pickle=True).item()
-    sa_run(alp, rh, t_c_list, t_p_list, in_data, text)
+    sa_run(alpha, rho, t_c_list, t_p_list, in_data, text)
 
 
 if __name__ == "__main__":
