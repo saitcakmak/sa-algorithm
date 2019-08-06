@@ -27,3 +27,9 @@ def estimator(theta_list, x, m, alpha, rho, prob, seq=0):
         return samples[int(n * alpha)], ders[int(n * alpha)]
     elif rho == "CVaR":
         return np.average(samples[int(n * alpha):]), np.average(ders[int(n * alpha):])
+    elif rho == "mean" or "mle":
+        return np.average(samples), np.average(ders)
+    elif rho == "m_v":
+        return np.average(samples) + samples[int(n * alpha)], np.average(ders) + ders[int(n * alpha)]
+    elif rho == "m_c":
+        return np.average(samples) + np.average(samples[int(n * alpha):]), np.average(ders) + np.average(ders[int(n * alpha):])
