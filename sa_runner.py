@@ -51,7 +51,7 @@ def main(alp, rh, text, input_str="1"):
     np.random.seed()
     t_c_list = np.load("mcmc_out/out_c_" + input_str + ".npy")
     t_p_list = np.load("mcmc_out/out_p_" + input_str + ".npy")
-    in_data = np.load("input_data/input_data_" + input_str + ".npy").item()
+    in_data = np.load("input_data/input_data_" + input_str + ".npy", allow_pickle=True).item()
     sa_run(alp, rh, t_c_list, t_p_list, in_data, text)
 
 
