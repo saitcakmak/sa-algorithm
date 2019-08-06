@@ -9,8 +9,8 @@ rh = input("rho: ")
 
 arg_list = []
 for i in range(1, run_count+1):
-    text = "run_" + str(i)
-    arg_list.append((alp, rh, text))
+    text = "input_" + str(i)
+    arg_list.append((alp, rh, text, str(i)))
 
 
 def dummy(alp, rh, text):
