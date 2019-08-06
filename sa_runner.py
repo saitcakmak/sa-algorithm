@@ -23,7 +23,6 @@ def estimate(x, n, alpha, rho, t_c_list, t_p_list, in_data):
         t_list = np.full_like( np.zeros((n, 2)), np.array([t_c, t_p]) )
     m = int(n/10)
     var, der = estimator(t_list, x, m, alpha, rho, "two_sided")
-    print("rho: ", rho, " var, der: ", var, der)
     return var, der
 
 
