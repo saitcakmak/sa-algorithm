@@ -15,8 +15,8 @@ def estimate(x, n, alpha, rho, t_c_list, t_p_list, in_data):
         t_p = t_p_list[index]
         t_list = np.transpose([t_c, t_p])
     else:
-        c_rate = 1/np.sum(in_data["cust"])
-        p_rate = 1/np.sum(in_data["prov"])
+        c_rate = 1/np.average(in_data["cust"])
+        p_rate = 1/np.average(in_data["prov"])
         t_c = np.log(80 / c_rate - 1) / 10
         t_p = - np.log( (1 - p_rate / 20) / (1 + p_rate / 20) ) / 10
         # noinspection PyTypeChecker
