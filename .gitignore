@@ -5,6 +5,7 @@ old_notation_runs/
 output/old/
 output/matlab/
 simple_output/processed/
+.DS_Store
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
