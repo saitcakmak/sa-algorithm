@@ -11,6 +11,8 @@ def estimator(theta_list, x, m, alpha, rho, prob, seq=0):
         sampler = problem_sampler.quad_sampler
     else:
         return -1
+    if rho == "mean_variance":
+        return variance_estimator(theta_list, x, m, alpha, sampler)
     n = len(theta_list)
     samples = np.zeros(n)
     ders = np.zeros(n)
@@ -33,3 +35,32 @@ def estimator(theta_list, x, m, alpha, rho, prob, seq=0):
         return np.average(samples) + samples[int(n * alpha)], np.average(ders) + ders[int(n * alpha)]
     elif rho == "m_c":
         return np.average(samples) + np.average(samples[int(n * alpha):]), np.average(ders) + np.average(ders[int(n * alpha):])
+
+
+def variance_estimator(theta_list, x, m, alpha, sampler):
+    n = len(theta_list)
+    samples = np.zeros(n)
+    ders = np.zeros(n)
+    prod_list = np.zeros(n)
+    for i in range(n):
+        inner_samples = sampler(theta_list[i], x, m)
+        samples[i] = np.average(inner_samples[0])
+        ders[i] = np.average(inner_samples[1])
+        val_half_1 = np.average(inner_samples[0][:int(m/2)])
+        val_half_2 = np.average(inner_samples[0][int(m/2):])
+        der_half_1 = np.average(inner_samples[1][:int(m/2)])
+        der_half_2 = np.average(inner_samples[1][int(m/2):])
+        prod_list[i] = val_half_1 * der_half_2 + val_half_2 * der_half_1
+
+    first_term = np.average(ders)
+    second_term = np.average(prod_list)
+
+    third_list = np.zeros(int(n/2))
+    for i in range(int(n/2)):
+        third_list[i] = samples[i * 2] * ders[i * 2 + 1] + samples[i * 2 + 1] * ders[i * 2]
+
+    third_term = np.average(third_list)
+
+    val = np.average(samples) + alpha * np.std(samples) ** 2
+    der = first_term + alpha * (second_term - third_term)
+    return val, der
