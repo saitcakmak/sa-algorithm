@@ -49,5 +49,5 @@ def online_run(alpha, rho, out_string="", x0=5, n0=300, iter_count=2000):
 if __name__ == "__main__":
     alp = float(input("alpha: " ))
     rh = input("rho: ")
-    text = input("text: ")
-    online_run(alp, rh, text)
+    # text = input("text: ")
+    online_run(alp, rh)
