@@ -61,6 +61,9 @@ def variance_estimator(theta_list, x, m, alpha, sampler):
 
     third_term = np.average(third_list)
 
-    val = np.average(samples) + alpha * np.std(samples) ** 2
+    mean = np.average(samples)
+    var = np.std(samples) ** 2
+    val = mean + alpha * var
     der = first_term + alpha * (second_term - third_term)
+    # print("mean: ", mean, " var: ", var)
     return val, der
