@@ -18,7 +18,8 @@ def dummy(alp, rh, text):
     return np.random.rand()
 
 
-pool = Pool(run_count)
+# pool = Pool(run_count)
+pool = Pool(1)
 pool_results = pool.starmap(sa_runner.main, arg_list)
 # pool_results = pool.starmap(dummy, arg_list)
 pool.close()
