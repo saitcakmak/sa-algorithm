@@ -3,12 +3,12 @@ from naive_estimator import estimator
 import datetime
 
 
-t_c_list = np.zeros((10, 100000))
-t_p_list = np.zeros((10, 100000))
+t_c_list = np.zeros((30, 100000))
+t_p_list = np.zeros((30, 100000))
 
-for i in range(10):
-    t_c_list[i] = np.load("mcmc_out/out_c_online_" + str(i) + ".npy")
-    t_p_list[i] = np.load("mcmc_out/out_p_online_" + str(i) + ".npy")
+for i in range(30):
+    t_c_list[i] = np.load("mcmc_out/out_c_online_" + str(i+1) + ".npy")
+    t_p_list[i] = np.load("mcmc_out/out_p_online_" + str(i+1) + ".npy")
 
 eps_num = 20
 eps_base = 100
@@ -25,15 +25,16 @@ def estimate(x, n, alpha, rho, block):
     return var, der
 
 
-def online_run(alpha, rho, out_string="", x0=5, n0=300, iter_count=2000):
+def online_run(alpha, rho, out_string="", x0=5, n0=300, iter_count=3000):
+    np.random.seed()
     begin = datetime.datetime.now()
     val_list = []
     der_list = []
     x_list = [x0]
     for t in range(1, iter_count+1):
-        eps = eps_num / (eps_base + ((t-1) % 200) + 1) ** 0.8
-        n = n0 + int((t-1) % 200 + 1)
-        val, der = estimate(x_list[t-1], n, alpha, rho, int((t-1)/200))
+        eps = eps_num / (eps_base + ((t-1) % 100) + 1) ** 0.8
+        n = n0 + int((t-1) % 100 + 1)
+        val, der = estimate(x_list[t-1], n, alpha, rho, int((t-1)/100))
         x_next = max(np.array(x_list[t-1]) - eps * np.array(der), x_low)  # make sure x is not out of bounds
         x_list.append(x_next)
         val_list.append(val)
