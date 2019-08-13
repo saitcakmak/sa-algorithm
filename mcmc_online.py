@@ -107,24 +107,24 @@ def run_both(run_length, theta, string, candidate_std, size, choice):
         return 0
 
 
-def main_run(size=10, total=10):
+def main_run(size=50, total=30):
     global samples_c, samples_p
     candidate_std = 0.025
-    std_diff = 0.005
     start = datetime.datetime.now()
     length = 100000
     t_start = 0.075
-    data_size = size * 2 ** (total - 1)
+    data_size = size * total
     samples_c = np.random.exponential(1/lam_c, data_size)
     samples_p = np.random.exponential(1/lam_p, data_size)
     input_data = {"size": data_size, "cust": samples_c, "prov": samples_p}
     np.save("input_data/input_data_online.npy", input_data)
     arg_list = []
-    for i in range(total):
-        args = (length, t_start, str(i), candidate_std - int(i/2) * std_diff, size * 2 ** i, "c")
+    for i in range(1, total+1):
+        args = (length, t_start, str(i), candidate_std, size * i, "c")
         arg_list.append(args)
-        args = (length, t_start, str(i), candidate_std - int(i/2) * std_diff, size * 2 ** i, "p")
+        args = (length, t_start, str(i), candidate_std, size * i, "p")
         arg_list.append(args)
+    # print(arg_list)
     pool = Pool()
     res = pool.starmap(run_both, arg_list)
     pool.close()
