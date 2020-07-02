@@ -2,8 +2,8 @@ import numpy as np
 from scipy.stats import wasserstein_distance
 import matplotlib.pyplot as plt
 
-t_c_list = np.load("mcmc_out/out_c_1.npy")
-t_p_list = np.load("mcmc_out/out_p_1.npy")
+t_c_list = np.load("../mcmc_out/out_c_1.npy")
+t_p_list = np.load("../mcmc_out/out_p_1.npy")
 
 # std = np.std(t_c_list)
 

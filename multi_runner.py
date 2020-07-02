@@ -1,5 +1,5 @@
 import numpy as np
-import sa_runner
+import two_sided_runner
 from multiprocessing import Pool
 
 
@@ -20,7 +20,7 @@ def dummy(alp, rh, text):
 
 pool = Pool(run_count)
 # pool = Pool(1)
-pool_results = pool.starmap(sa_runner.main, arg_list)
+pool_results = pool.starmap(two_sided_runner.main, arg_list)
 # pool_results = pool.starmap(dummy, arg_list)
 pool.close()
 pool.join()

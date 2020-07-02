@@ -1,6 +1,6 @@
 import numpy as np
 import naive_estimator
-from heuristics import lr_estimator, sequential_estimator, sequential_lr_estimator
+from old.heuristics import sequential_lr_estimator, lr_estimator, sequential_estimator
 import datetime
 from multiprocessing import Pool
 

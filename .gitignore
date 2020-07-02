@@ -1,7 +1,7 @@
 mcmc_len_10000000_.npy
 temp_out.npy
-old_notation_code/
-old_notation_runs/
+old/old_notation_code/
+old/old_notation_runs/
 output/old/
 output/matlab/
 simple_output/processed/
@@ -111,3 +111,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+/.idea/
+/old/output_v1/
+/quad_estimators/run2_n=m/
+/simple_output/lr_mistake/

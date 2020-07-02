@@ -3,12 +3,25 @@ import problem_sampler
 
 
 def estimator(theta_list, x, m, alpha, rho, prob, seq=0):
+    """
+    Samples from the function and calculates the value of the estimator and the derivative
+    :param theta_list: List of theta samples
+    :param x: decision x
+    :param m: number of inner samples
+    :param alpha: risk level
+    :param rho: risk measure
+    :param prob: the problem to sample from
+    :param seq: ignore
+    :return: value of the estimator and its derivative
+    """
     if prob == "simple":
         sampler = problem_sampler.simple_sampler
     elif prob == "two_sided":
         sampler = problem_sampler.two_sided_sampler
     elif prob == "quad":
         sampler = problem_sampler.quad_sampler
+    elif prob == 'normal':
+        sampler = problem_sampler.simple_normal_sampler
     else:
         return -1
     if rho == "mean_variance":

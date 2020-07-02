@@ -18,7 +18,14 @@ delta = 10 ** -6
 
 
 def two_sided(theta, x):
-    lam = K_c * 2 * np.exp(- theta[0] * x) / (1 + np.exp(- theta[0] * x))  # if this is changed, then change derivative calculation as well
+    """
+    Two-sided problem objective
+    :param theta:
+    :param x:
+    :return:
+    """
+    lam = K_c * 2 * np.exp(- theta[0] * x) / (1 + np.exp(- theta[0] * x))
+    # if this is changed, then change derivative calculation as well
     lam_prime = - K_c * 2 * theta[0] * np.exp(- theta[0] * x) / (1 + np.exp(- theta[0] * x)) ** 2
     mu = K_p * (1 - np.exp(- theta[1] * x)) / (1 + np.exp(- theta[1] * x))  # same with this
     mu_prime = K_p * 2 * theta[1] * np.exp(- theta[1] * x) / (1 + np.exp(- theta[1] * x)) ** 2
@@ -45,7 +52,14 @@ def two_sided(theta, x):
 
 
 def two_sided_lr(theta, x):
-    lam = K_c * 2 * np.exp(- theta[0] * x) / (1 + np.exp(- theta[0] * x))  # if this is changed, then change derivative calculation as well
+    """
+    Two sided objective that returns likelihood for IS or LR calculations.
+    :param theta:
+    :param x:
+    :return:
+    """
+    lam = K_c * 2 * np.exp(- theta[0] * x) / (1 + np.exp(- theta[0] * x))
+    # if this is changed, then change derivative calculation as well
     lam_prime = - K_c * 2 * theta[0] * np.exp(- theta[0] * x) / (1 + np.exp(- theta[0] * x)) ** 2
     mu = K_p * (1 - np.exp(- theta[1] * x)) / (1 + np.exp(- theta[1] * x))  # same with this
     mu_prime = K_p * 2 * theta[1] * np.exp(- theta[1] * x) / (1 + np.exp(- theta[1] * x)) ** 2

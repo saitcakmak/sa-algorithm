@@ -68,3 +68,19 @@ def two_sided_sampler_lr(theta, x, m):
         rvs[i] = run[2]
         likelihood[i] = run[3]
     return samples, ders, rvs, likelihood
+
+
+def simple_normal_sampler(theta, x, m):
+    r"""
+    For sampling from the simple normal example where h(x, \xi) = x \theta_1 + x^2 \theta_2 + x \xi
+    :param theta:
+    :param x:
+    :param m:
+    :return:
+    """
+    if theta.ndim > 1:
+        raise ValueError("Only handles 1 theta at a time!")
+    xi = np.random.normal(0, theta[0] ** 2, m)
+    samples = x * theta[0] + x ** 2 * theta[1] + x * xi
+    ders = theta[0] + 2 * x * theta[1] + xi
+    return samples, ders

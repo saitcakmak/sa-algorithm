@@ -47,6 +47,12 @@ for j in range(3):
 
 
 fig.subplots_adjust(hspace=spacing)
+axes[0, 0].set_ylabel("Count")
+axes[1, 0].set_ylabel("Count")
+axes[2, 0].set_ylabel("Count")
+axes[2, 0].set_xlabel("$H^c(p)$")
+axes[2, 1].set_xlabel("$H^c(p)$")
+axes[2, 2].set_xlabel("$H^c(p)$")
 plt.show()
 
 
@@ -95,4 +101,10 @@ for j in range(3):
 
 
 fig.subplots_adjust(hspace=spacing)
+axes[0, 0].set_ylabel("Count")
+axes[1, 0].set_ylabel("Count")
+axes[2, 0].set_ylabel("Count")
+axes[2, 0].set_xlabel("Price")
+axes[2, 1].set_xlabel("Price")
+axes[2, 2].set_xlabel("Price")
 plt.show()
