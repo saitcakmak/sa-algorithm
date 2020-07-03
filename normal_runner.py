@@ -30,9 +30,9 @@ def analytic_value_VaR(x):
     for other values change z as described in the paper.
     minimizer: x = 0.586924
     """
-    mu_H = -15 * x + 10 + x ** 2
+    mu_H = -15 * x + 10 * x ** 2
     z = 0.67448975
-    sigma_H = np.sqrt((16 ** 2 + 15 ** 2) * x ** 2 - 300 * x ** 3 + (10 ** 2 + 4 ** 2) * x ** 4)
+    sigma_H = np.sqrt((15 ** 2 + 16) * x ** 2 - 300 * x ** 3 + (10 ** 2 + 4) * x ** 4)
     return mu_H + z * sigma_H
 
 
