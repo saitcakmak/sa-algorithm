@@ -11,11 +11,29 @@ from gpytorch.mlls import ExactMarginalLogLikelihood
 from botorch.models.transforms import Standardize
 from botorch.utils import draw_sobol_samples
 from typing import List
+from multiprocessing import Pool
 
 eps_num = 0.5
 eps_base = 10
 call_count = 0
 n_step = 0
+
+
+def analytic_value_VaR(x):
+    """
+    Calculates the true value of the BRO objective
+    :param x:
+    :param rho:
+    :param alpha:
+    :return:
+    this is for VaR 0.75
+    for other values change z as described in the paper.
+    minimizer: x = 0.586924
+    """
+    mu_H = -15 * x + 10 + x ** 2
+    z = 0.67448975
+    sigma_H = np.sqrt((16 ** 2 + 15 ** 2) * x ** 2 - 300 * x ** 3 + (10 ** 2 + 4 ** 2) * x ** 4)
+    return mu_H + z * sigma_H
 
 
 def estimate(x, n, alpha, rho, mu_1, mu_2, sigma_1, sigma_2, seed=None):
@@ -34,7 +52,7 @@ def estimate(x, n, alpha, rho, mu_1, mu_2, sigma_1, sigma_2, seed=None):
         t_0 = np.ones(n, 1) * mu_1
         t_1 = np.ones(n, 1) * mu_2
         t_list = np.concatenate((t_0, t_1), axis=1)
-    m = int(n / 10)
+    m = int(n / 5)
     val, der = estimator(t_list, float(x), m, alpha, rho, "normal")
     if seed is not None:
         np.random.set_state(old_state)
@@ -203,21 +221,24 @@ def EI_run(seed, alpha, rho, x0=5, n0=100, iter_count=1000, mu_1=2, mu_2=5, sigm
 
     points = torch.empty(iter_count, 1)
     values = torch.empty(points.shape)
-    bounds = torch.tensor([[-10.], [10.]])
-    points[:4] = draw_sobol_samples(bounds, n=4, q=1).reshape(-1, 1)
+    points[:4] = draw_sobol_samples(torch.tensor([[-5.], [5.]]), n=4, q=1).reshape(-1, 1)
     for i in range(4):
         values[i] = estimate_no_grad(points[i], *args)
 
     for i in range(4, iter_count):
         # fit gp
-        model = SingleTaskGP(points[:i], values[:i], outcome_transform=Standardize(m=1))
+        # this transforms the GP to unit domain - botorch priors work best there
+        transformed_points = points / 10. + 0.5
+        model = SingleTaskGP(transformed_points[:i], values[:i], outcome_transform=Standardize(m=1))
         mll = ExactMarginalLogLikelihood(model.likelihood, model)
         fit_gpytorch_model(mll)
 
         # optimize EI to get the candidate
         acqf = ExpectedImprovement(model, best_f=torch.min(values), maximize=False)
-        best_p, _ = optimize_acqf(acqf, bounds=bounds, q=1, num_restarts=10, raw_samples=50)
-        points[i] = best_p.detach()
+        best_p, _ = optimize_acqf(acqf, bounds=torch.tensor([[0.], [1.]]), q=1, num_restarts=10, raw_samples=50)
+        # transform it back to original domain
+        best_p = best_p.detach() * 10. - 5.
+        points[i] = best_p
         values[i] = estimate_no_grad(points[i], *args)
 
     best_list = torch.empty(points.shape)
@@ -234,17 +255,13 @@ def EI_run(seed, alpha, rho, x0=5, n0=100, iter_count=1000, mu_1=2, mu_2=5, sigm
     return x_list
 
 
-def evaluate(out_dict, kwargs, n=10000, eval_seed=0):
+def evaluate(out_dict):
     """
-    plots the data provided by the out_dict. Evaluates these solutions using the given budget n.
+    evaluates the data provided by the out_dict. Evaluates these solutions using the true objective
+    set only for VaR 0.75
     :param out_dict: out data dict
-    :param iters: number of iterations
-    :param n: budget
-    :param args: for calling the function evaluations
-    :param eval_seed: use this seed for all evaluations
     :return: plot
     """
-    args = (n, kwargs['alpha'], kwargs['rho'], kwargs['mu_1'], kwargs['mu_2'], kwargs['sigma_1'], kwargs['sigma_2'])
     out = dict()
     for key, entry in out_dict.items():
         out[key] = dict()
@@ -252,7 +269,7 @@ def evaluate(out_dict, kwargs, n=10000, eval_seed=0):
             total = 0.
             count = 0
             for x_list in data.values():
-                total += estimate_no_grad(x_list[-1], *args, eval_seed)
+                total += analytic_value_VaR(x_list[-1])
                 count += 1
             out[key][it_count] = total / count
     np.save('normal_out_all.npy', out)
@@ -270,14 +287,14 @@ def multi_run(replications: int, iters: List):
     """
     global call_count
     kwargs = {
-        'alpha': 0.7,
-        'rho': 'CVaR',
+        'alpha': 0.75,
+        'rho': 'VaR',
         'x0': 5,
-        'n0': 1000,
-        'mu_1': 2,
-        'mu_2': 5,
-        'sigma_1': 1,
-        'sigma_2': 1
+        'n0': 100,
+        'mu_1': -15,
+        'mu_2': 10,
+        'sigma_1': 16,
+        'sigma_2': 4
     }
 
     out_dict = {
@@ -324,7 +341,81 @@ def multi_run(replications: int, iters: List):
             total_calls['EI_SAA'][it_count] += call_count
             call_count = 0
     np.save('call_counts.npy', total_calls)
-    evaluate(out_dict, kwargs)
+    evaluate(out_dict)
+
+
+def multi_run_parallel(replications: int, iters: List):
+    """
+    Runs all the algorithms defined above for the given number of replications
+    using the kwargs defined below.
+    Only works with fixed budget!!
+    Total_calls might be corrupted!
+    The algorithms are set up so that they use at most the given number of function evaluations
+    :param replications:
+    :param iters: A list of number of iterations to run the algorithms for
+    :return:
+    """
+    kwargs = {
+        'alpha': 0.75,
+        'rho': 'VaR',
+        'x0': 5,
+        'n0': 100,
+        'mu_1': -15,
+        'mu_2': 10,
+        'sigma_1': 16,
+        'sigma_2': 4
+    }
+
+    out_dict = {
+        'SA': dict(),
+        'SA_SAA': dict(),
+        'NM': dict(),
+        'NM_SAA': dict(),
+        'LBFGS': dict(),
+        'LBFGS_SAA': dict(),
+        'EI': dict(),
+        'EI_SAA': dict()
+    }
+    total_calls = dict()
+
+    def f(it_count, i):
+        """
+        Handles the inside of the for loop. Essentially does a single replication.
+        :param it_count:
+        :param i:
+        :return:
+        """
+        out_dict['SA'][it_count][i] = SA_run(seed=i, **kwargs)
+        total_calls['SA'][it_count] += call_count
+        out_dict['SA_SAA'][it_count][i] = SA_run(seed=i, **kwargs, SAA_seed=i)
+        total_calls['SA_SAA'][it_count] += call_count
+        out_dict['NM'][it_count][i] = NM_run(seed=i, **kwargs)
+        total_calls['NM'][it_count] += call_count
+        out_dict['NM_SAA'][it_count][i] = NM_run(seed=i, **kwargs, SAA_seed=i)
+        total_calls['NM_SAA'][it_count] += call_count
+        out_dict['LBFGS'][it_count][i] = LBFGS_run(seed=i, **kwargs)
+        total_calls['LBFGS'][it_count] += call_count
+        out_dict['LBFGS_SAA'][it_count][i] = LBFGS_run(seed=i, **kwargs, SAA_seed=i)
+        total_calls['LBFGS_SAA'][it_count] += call_count
+        out_dict['EI'][it_count][i] = EI_run(seed=i, **kwargs)
+        total_calls['EI'][it_count] += call_count
+        out_dict['EI_SAA'][it_count][i] = EI_run(seed=i, **kwargs, SAA_seed=i)
+        total_calls['EI_SAA'][it_count] += call_count
+
+    for key in out_dict.keys():
+        total_calls[key] = dict()
+    args = []
+    for it_count in iters:
+        kwargs['iter_count'] = it_count
+        for key in out_dict.keys():
+            out_dict[key][it_count] = dict()
+            total_calls[key][it_count] = 0
+        for i in range(replications):
+            args.append((it_count, i))
+    pool = Pool()
+    pool.starmap(f, args)
+    np.save('call_counts.npy', total_calls)
+    evaluate(out_dict)
 
 
 if __name__ == "__main__":
