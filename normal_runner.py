@@ -354,9 +354,11 @@ def multi_run(replications: int, iters: List, n: int):
 if __name__ == "__main__":
     replications = 50
     iters = [10, 20, 50, 100]
-    multi_run(replications, iters, n=100)
-    multi_run(replications, iters, n=400)
-    multi_run(replications, iters, n=1000)
+    # multi_run(replications, iters, n=100)
+    # multi_run(replications, iters, n=400)
+    # multi_run(replications, iters, n=1000)
+    # multi_run(replications, iters, n=4000)
+    multi_run(replications, iters, n=10000)
 
 
 
