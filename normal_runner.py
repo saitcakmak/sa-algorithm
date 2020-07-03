@@ -255,11 +255,12 @@ def EI_run(seed, alpha, rho, x0=5, n0=100, iter_count=1000, mu_1=2, mu_2=5, sigm
     return x_list
 
 
-def evaluate(out_dict):
+def evaluate(out_dict, n):
     """
     evaluates the data provided by the out_dict. Evaluates these solutions using the true objective
     set only for VaR 0.75
     :param out_dict: out data dict
+    :param n: just used for output name
     :return: plot
     """
     out = dict()
@@ -272,17 +273,18 @@ def evaluate(out_dict):
                 total += analytic_value_VaR(x_list[-1])
                 count += 1
             out[key][it_count] = total / count
-    np.save('normal_out_all.npy', out)
+    np.save('normal_out_all_%d.npy' % n, out)
     print(out)
 
 
-def multi_run(replications: int, iters: List):
+def multi_run(replications: int, iters: List, n: int):
     """
     Runs all the algorithms defined above for the given number of replications
     using the kwargs defined below.
     The algorithms are set up so that they use at most the given number of function evaluations
     :param replications:
     :param iters: A list of number of iterations to run the algorithms for
+    :param n: budget n
     :return:
     """
     global call_count
@@ -290,7 +292,7 @@ def multi_run(replications: int, iters: List):
         'alpha': 0.75,
         'rho': 'VaR',
         'x0': 5,
-        'n0': 100,
+        'n0': n,
         'mu_1': -15,
         'mu_2': 10,
         'sigma_1': 16,
@@ -315,109 +317,46 @@ def multi_run(replications: int, iters: List):
         for key in out_dict.keys():
             out_dict[key][it_count] = dict()
             total_calls[key][it_count] = 0
-        for i in range(replications):
-            out_dict['SA'][it_count][i] = SA_run(seed=i, **kwargs)
-            total_calls['SA'][it_count] += call_count
-            call_count = 0
-            out_dict['SA_SAA'][it_count][i] = SA_run(seed=i, **kwargs, SAA_seed=i)
-            total_calls['SA_SAA'][it_count] += call_count
-            call_count = 0
-            out_dict['NM'][it_count][i] = NM_run(seed=i, **kwargs)
-            total_calls['NM'][it_count] += call_count
-            call_count = 0
-            out_dict['NM_SAA'][it_count][i] = NM_run(seed=i, **kwargs, SAA_seed=i)
-            total_calls['NM_SAA'][it_count] += call_count
-            call_count = 0
-            out_dict['LBFGS'][it_count][i] = LBFGS_run(seed=i, **kwargs)
-            total_calls['LBFGS'][it_count] += call_count
-            call_count = 0
-            out_dict['LBFGS_SAA'][it_count][i] = LBFGS_run(seed=i, **kwargs, SAA_seed=i)
-            total_calls['LBFGS_SAA'][it_count] += call_count
-            call_count = 0
-            out_dict['EI'][it_count][i] = EI_run(seed=i, **kwargs)
-            total_calls['EI'][it_count] += call_count
-            call_count = 0
-            out_dict['EI_SAA'][it_count][i] = EI_run(seed=i, **kwargs, SAA_seed=i)
-            total_calls['EI_SAA'][it_count] += call_count
-            call_count = 0
-    np.save('call_counts.npy', total_calls)
-    evaluate(out_dict)
-
-
-def multi_run_parallel(replications: int, iters: List):
-    """
-    Runs all the algorithms defined above for the given number of replications
-    using the kwargs defined below.
-    Only works with fixed budget!!
-    Total_calls might be corrupted!
-    The algorithms are set up so that they use at most the given number of function evaluations
-    :param replications:
-    :param iters: A list of number of iterations to run the algorithms for
-    :return:
-    """
-    kwargs = {
-        'alpha': 0.75,
-        'rho': 'VaR',
-        'x0': 5,
-        'n0': 100,
-        'mu_1': -15,
-        'mu_2': 10,
-        'sigma_1': 16,
-        'sigma_2': 4
-    }
-
-    out_dict = {
-        'SA': dict(),
-        'SA_SAA': dict(),
-        'NM': dict(),
-        'NM_SAA': dict(),
-        'LBFGS': dict(),
-        'LBFGS_SAA': dict(),
-        'EI': dict(),
-        'EI_SAA': dict()
-    }
-    total_calls = dict()
-
-    def f(it_count, i):
-        """
-        Handles the inside of the for loop. Essentially does a single replication.
-        :param it_count:
-        :param i:
-        :return:
-        """
-        out_dict['SA'][it_count][i] = SA_run(seed=i, **kwargs)
-        total_calls['SA'][it_count] += call_count
-        out_dict['SA_SAA'][it_count][i] = SA_run(seed=i, **kwargs, SAA_seed=i)
-        total_calls['SA_SAA'][it_count] += call_count
-        out_dict['NM'][it_count][i] = NM_run(seed=i, **kwargs)
-        total_calls['NM'][it_count] += call_count
-        out_dict['NM_SAA'][it_count][i] = NM_run(seed=i, **kwargs, SAA_seed=i)
-        total_calls['NM_SAA'][it_count] += call_count
-        out_dict['LBFGS'][it_count][i] = LBFGS_run(seed=i, **kwargs)
-        total_calls['LBFGS'][it_count] += call_count
-        out_dict['LBFGS_SAA'][it_count][i] = LBFGS_run(seed=i, **kwargs, SAA_seed=i)
-        total_calls['LBFGS_SAA'][it_count] += call_count
-        out_dict['EI'][it_count][i] = EI_run(seed=i, **kwargs)
-        total_calls['EI'][it_count] += call_count
-        out_dict['EI_SAA'][it_count][i] = EI_run(seed=i, **kwargs, SAA_seed=i)
-        total_calls['EI_SAA'][it_count] += call_count
-
-    for key in out_dict.keys():
-        total_calls[key] = dict()
-    args = []
-    for it_count in iters:
-        kwargs['iter_count'] = it_count
-        for key in out_dict.keys():
-            out_dict[key][it_count] = dict()
-            total_calls[key][it_count] = 0
-        for i in range(replications):
-            args.append((it_count, i))
-    pool = Pool()
-    pool.starmap(f, args)
-    np.save('call_counts.npy', total_calls)
-    evaluate(out_dict)
+        i = 0
+        while i < replications:
+            try:
+                out_dict['SA'][it_count][i] = SA_run(seed=i, **kwargs)
+                total_calls['SA'][it_count] += call_count
+                call_count = 0
+                out_dict['SA_SAA'][it_count][i] = SA_run(seed=i, **kwargs, SAA_seed=i)
+                total_calls['SA_SAA'][it_count] += call_count
+                call_count = 0
+                out_dict['NM'][it_count][i] = NM_run(seed=i, **kwargs)
+                total_calls['NM'][it_count] += call_count
+                call_count = 0
+                out_dict['NM_SAA'][it_count][i] = NM_run(seed=i, **kwargs, SAA_seed=i)
+                total_calls['NM_SAA'][it_count] += call_count
+                call_count = 0
+                out_dict['LBFGS'][it_count][i] = LBFGS_run(seed=i, **kwargs)
+                total_calls['LBFGS'][it_count] += call_count
+                call_count = 0
+                out_dict['LBFGS_SAA'][it_count][i] = LBFGS_run(seed=i, **kwargs, SAA_seed=i)
+                total_calls['LBFGS_SAA'][it_count] += call_count
+                call_count = 0
+                out_dict['EI'][it_count][i] = EI_run(seed=i, **kwargs)
+                total_calls['EI'][it_count] += call_count
+                call_count = 0
+                out_dict['EI_SAA'][it_count][i] = EI_run(seed=i, **kwargs, SAA_seed=i)
+                total_calls['EI_SAA'][it_count] += call_count
+                call_count = 0
+                i += 1
+            except:
+                continue
+    np.save('call_counts_%d.npy' % n, total_calls)
+    evaluate(out_dict, n)
 
 
 if __name__ == "__main__":
-    multi_run(50, [10, 20, 50, 100])
+    replications = 50
+    iters = [10, 20, 50, 100]
+    multi_run(replications, iters, n=100)
+    multi_run(replications, iters, n=400)
+    multi_run(replications, iters, n=1000)
+
+
 
