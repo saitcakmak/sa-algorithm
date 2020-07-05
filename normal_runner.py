@@ -13,8 +13,8 @@ from botorch.utils import draw_sobol_samples
 from typing import List
 from multiprocessing import Pool
 
-eps_num = 0.5
-eps_base = 10
+eps_num = 0.005
+eps_base = 1
 call_count = 0
 n_step = 0
 
@@ -31,7 +31,8 @@ def analytic_value_VaR(x):
     minimizer: x = 0.586924
     """
     mu_H = -15 * x + 10 * x ** 2
-    z = 0.67448975
+    z = 0.67448975  # VaR 0.75
+    z = .7978845608028654  # CVaR 0.5
     sigma_H = np.sqrt((15 ** 2 + 16) * x ** 2 - 300 * x ** 3 + (10 ** 2 + 4) * x ** 4)
     return mu_H + z * sigma_H
 
@@ -273,7 +274,7 @@ def evaluate(out_dict, n):
                 total += analytic_value_VaR(x_list[-1])
                 count += 1
             out[key][it_count] = total / count
-    np.save('normal_out_all_%d.npy' % n, out)
+    np.save('normal_out_all_cvar_sa_%d.npy' % n, out)
     print(out)
 
 
@@ -289,25 +290,27 @@ def multi_run(replications: int, iters: List, n: int):
     """
     global call_count
     kwargs = {
-        'alpha': 0.75,
-        'rho': 'VaR',
-        'x0': 5,
+        # 'alpha': 0.75,
+        # 'rho': 'VaR',
+        'alpha': 0.5,
+        'rho': 'CVaR',
+        'x0': 2,
         'n0': n,
         'mu_1': -15,
         'mu_2': 10,
-        'sigma_1': 16,
-        'sigma_2': 4
+        'sigma_1': 4,
+        'sigma_2': 2
     }
 
     out_dict = {
         'SA': dict(),
         'SA_SAA': dict(),
-        'NM': dict(),
-        'NM_SAA': dict(),
-        'LBFGS': dict(),
-        'LBFGS_SAA': dict(),
-        'EI': dict(),
-        'EI_SAA': dict()
+        # 'NM': dict(),
+        # 'NM_SAA': dict(),
+        # 'LBFGS': dict(),
+        # 'LBFGS_SAA': dict(),
+        # 'EI': dict(),
+        # 'EI_SAA': dict()
     }
     total_calls = dict()
     for key in out_dict.keys():
@@ -326,39 +329,39 @@ def multi_run(replications: int, iters: List, n: int):
                 out_dict['SA_SAA'][it_count][i] = SA_run(seed=i, **kwargs, SAA_seed=i)
                 total_calls['SA_SAA'][it_count] += call_count
                 call_count = 0
-                out_dict['NM'][it_count][i] = NM_run(seed=i, **kwargs)
-                total_calls['NM'][it_count] += call_count
-                call_count = 0
-                out_dict['NM_SAA'][it_count][i] = NM_run(seed=i, **kwargs, SAA_seed=i)
-                total_calls['NM_SAA'][it_count] += call_count
-                call_count = 0
-                out_dict['LBFGS'][it_count][i] = LBFGS_run(seed=i, **kwargs)
-                total_calls['LBFGS'][it_count] += call_count
-                call_count = 0
-                out_dict['LBFGS_SAA'][it_count][i] = LBFGS_run(seed=i, **kwargs, SAA_seed=i)
-                total_calls['LBFGS_SAA'][it_count] += call_count
-                call_count = 0
-                out_dict['EI'][it_count][i] = EI_run(seed=i, **kwargs)
-                total_calls['EI'][it_count] += call_count
-                call_count = 0
-                out_dict['EI_SAA'][it_count][i] = EI_run(seed=i, **kwargs, SAA_seed=i)
-                total_calls['EI_SAA'][it_count] += call_count
-                call_count = 0
+                # out_dict['NM'][it_count][i] = NM_run(seed=i, **kwargs)
+                # total_calls['NM'][it_count] += call_count
+                # call_count = 0
+                # out_dict['NM_SAA'][it_count][i] = NM_run(seed=i, **kwargs, SAA_seed=i)
+                # total_calls['NM_SAA'][it_count] += call_count
+                # call_count = 0
+                # out_dict['LBFGS'][it_count][i] = LBFGS_run(seed=i, **kwargs)
+                # total_calls['LBFGS'][it_count] += call_count
+                # call_count = 0
+                # out_dict['LBFGS_SAA'][it_count][i] = LBFGS_run(seed=i, **kwargs, SAA_seed=i)
+                # total_calls['LBFGS_SAA'][it_count] += call_count
+                # call_count = 0
+                # out_dict['EI'][it_count][i] = EI_run(seed=i, **kwargs)
+                # total_calls['EI'][it_count] += call_count
+                # call_count = 0
+                # out_dict['EI_SAA'][it_count][i] = EI_run(seed=i, **kwargs, SAA_seed=i)
+                # total_calls['EI_SAA'][it_count] += call_count
+                # call_count = 0
                 i += 1
             except:
                 continue
-    np.save('call_counts_%d.npy' % n, total_calls)
+    np.save('call_counts_cvar_sa_%d.npy' % n, total_calls)
     evaluate(out_dict, n)
 
 
 if __name__ == "__main__":
     replications = 50
     iters = [10, 20, 50, 100]
-    # multi_run(replications, iters, n=100)
+    multi_run(replications, iters, n=100)
     # multi_run(replications, iters, n=400)
     # multi_run(replications, iters, n=1000)
     # multi_run(replications, iters, n=4000)
-    multi_run(replications, iters, n=10000)
+    # multi_run(replications, iters, n=10000)
 
 
 
