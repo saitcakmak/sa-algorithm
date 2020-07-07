@@ -80,7 +80,7 @@ def simple_normal_sampler(theta, x, m):
     """
     if theta.ndim > 1:
         raise ValueError("Only handles 1 theta at a time!")
-    xi = np.random.normal(0, theta[0] ** 2, m)
+    xi = np.random.normal(0, theta[0] ** 2 / 100, m)
     samples = x * theta[0] + x ** 2 * theta[1] + x * xi
     ders = theta[0] + 2 * x * theta[1] + xi
     return samples, ders

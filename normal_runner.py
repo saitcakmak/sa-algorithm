@@ -13,7 +13,7 @@ from botorch.utils import draw_sobol_samples
 from typing import List
 from multiprocessing import Pool
 
-eps_num = 0.005
+eps_num = 0.05
 eps_base = 1
 call_count = 0
 n_step = 0
@@ -31,9 +31,10 @@ def analytic_value_VaR(x):
     minimizer: x = 0.586924
     """
     mu_H = -15 * x + 10 * x ** 2
-    z = 0.67448975  # VaR 0.75
+    # z = 0.67448975  # VaR 0.75
     # z = .7978845608028654  # CVaR 0.5
-    sigma_H = np.sqrt((15 ** 2 + 16) * x ** 2 - 300 * x ** 3 + (10 ** 2 + 4) * x ** 4)
+    z = 1.27111  # CVaR 0.75
+    sigma_H = np.sqrt(16 * x ** 2 + 4 * x ** 4)
     return mu_H + z * sigma_H
 
 
@@ -259,7 +260,7 @@ def EI_run(seed, alpha, rho, x0=5, n0=100, iter_count=1000, mu_1=2, mu_2=5, sigm
 def evaluate(out_dict, n):
     """
     evaluates the data provided by the out_dict. Evaluates these solutions using the true objective
-    set only for VaR 0.75
+    set the correct parameters in analytic value...
     :param out_dict: out data dict
     :param n: just used for output name
     :return: plot
@@ -274,7 +275,7 @@ def evaluate(out_dict, n):
                 total += analytic_value_VaR(x_list[-1])
                 count += 1
             out[key][it_count] = total / count
-    np.save('normal_out_all_var_%d.npy' % n, out)
+    np.save('normal_out_all_cvar_%d.npy' % n, out)
     print(out)
 
 
@@ -290,10 +291,10 @@ def multi_run(replications: int, iters: List, n: int):
     """
     global call_count
     kwargs = {
+        # 'alpha': 0.75,
+        # 'rho': 'VaR',
         'alpha': 0.75,
-        'rho': 'VaR',
-        # 'alpha': 0.5,
-        # 'rho': 'CVaR',
+        'rho': 'CVaR',
         'x0': 2,
         'n0': n,
         'mu_1': -15,
@@ -350,16 +351,16 @@ def multi_run(replications: int, iters: List, n: int):
                 i += 1
             except:
                 continue
-    np.save('call_counts_var_%d.npy' % n, total_calls)
+    np.save('call_counts_cvar_%d.npy' % n, total_calls)
     evaluate(out_dict, n)
 
 
 if __name__ == "__main__":
     replications = 50
     iters = [10, 20, 50, 100]
-    # multi_run(replications, iters, n=100)
+    multi_run(replications, iters, n=100)
     # multi_run(replications, iters, n=400)
-    multi_run(replications, iters, n=1000)
+    # multi_run(replications, iters, n=1000)
     # multi_run(replications, iters, n=4000)
     # multi_run(replications, iters, n=10000)
 
