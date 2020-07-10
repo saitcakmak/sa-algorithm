@@ -1,6 +1,12 @@
-This is old code and is not well documented.
+This is the code used for running the numerical experiments presented
+in the paper "Solving Bayesian Risk Optimization via Nested Stochastic Gradient Estimation"
+by Cakmak, Wu and Zhou.
 
-Here is how it works as well as I can understand at the moment.
+The code is a bit old and is not well documented.
+
+Here is a brief overview of how things work:
+
+normal_runner: the script for simple quadratic example 
 
 problem_sampler: has scripts for sampling from h() and h'() for the available problems.
 Pick the curresponding function and call it with given theta, x and m. It will return
@@ -19,9 +25,9 @@ two_sided_runner: The main code for running a replication of the two sided probl
 
 normal_runner: in works, for running the simple normal example
 
-output_reader: TODO
+output_reader: To read the SA outputs
 
-output_analyzer: TODO
+output_analyzer: To read the SA outputs
 
 mcmc: generates the MCMC sample paths for estimating P^N in the two_sided problem
 
