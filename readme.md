@@ -1,6 +1,6 @@
 This is the code used for running the numerical experiments presented
 in the paper "Solving Bayesian Risk Optimization via Nested Stochastic Gradient Estimation"
-by Cakmak, Wu and Zhou.
+by Cakmak, Wu and Zhou: https://arxiv.org/abs/2007.05860.
 
 The code is a bit old and is not well documented.
 
